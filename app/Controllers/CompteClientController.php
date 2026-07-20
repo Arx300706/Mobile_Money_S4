@@ -45,23 +45,18 @@ class CompteClientController extends BaseController
             return redirect()->to('/')->with('error', 'Compte client introuvable.');
         }
 
-        $montant = (float) $this->request->getPost('montant');
-        $telephoneDestinataire = trim((string) $this->request->getPost('telephone_destinataire'));
-        $compteDestinataire = (new CompteClientModel())->findByTelephone($telephoneDestinataire);
+        $montantTotal = (float) $this->request->getPost('montant');
+        $telephones = $this->telephonesDestinataires();
 
-        if ($montant <= 0) {
-            return redirect()->to('/compte')->with('errors', ['Le montant du transfert doit etre superieur a 0.']);
+        if ($montantTotal <= 0) {
+            return redirect()->to('/compte')->with('errors', ['Le montant du transfert doit etre superieur a 0.'])->withInput();
         }
 
-        if (! $compteDestinataire) {
-            return redirect()->to('/compte')->with('errors', ['Compte destinataire introuvable.']);
+        if ($telephones === []) {
+            return redirect()->to('/compte')->with('errors', ['Veuillez entrer au moins un numero destinataire.'])->withInput();
         }
 
-        if ((int) $compteDestinataire['id'] === (int) $compteSource['id']) {
-            return redirect()->to('/compte')->with('errors', ['Impossible de transferer vers votre propre compte.']);
-        }
-
-        return $this->executerOperation('Transfert', $compteSource, $montant, $compteDestinataire);
+        return $this->executerTransferts($compteSource, $montantTotal, $telephones);
     }
 
     private function operationSimple(string $operation)
@@ -75,189 +70,214 @@ class CompteClientController extends BaseController
         $montant = (float) $this->request->getPost('montant');
 
         if ($montant <= 0) {
-            return redirect()->to('/compte')->with('errors', ['Le montant doit etre superieur a 0.']);
+            return redirect()->to('/compte')->with('errors', ['Le montant doit etre superieur a 0.'])->withInput();
         }
 
-        return $this->executerOperation($operation, $compte, $montant);
+        return $this->executerOperationSimple($operation, $compte, $montant);
     }
 
-    // private function executerOperation(string $operation, array $compteSource, float $montant, ?array $compteDestinataire = null)
-    // {
-    //     $db = \Config\Database::connect();
-    //     $compteModel = new CompteClientModel();
-    //     $typeModel = new TypeOperationsModel();
-    //     $transactionModel = new TransactionModel();
-    //     $historiqueModel = new HistoriqueTransactionModel();
-    //     $typeOperation = $typeModel->findByNom($operation);
-    //     $operateur = (new OperateurModel())->findByTelephone($compteSource['telephone']);
+    private function executerOperationSimple(string $operation, array $compte, float $montant)
+    {
+        $typeOperation = (new TypeOperationsModel())->findByNom($operation);
+        $operateur = (new OperateurModel())->findByTelephone($compte['telephone']);
 
-    //     if (! $typeOperation) {
-    //         return redirect()->to('/compte')->with('errors', ['Type d operation introuvable: ' . $operation]);
-    //     }
-
-    //     if (! $operateur) {
-    //         return redirect()->to('/compte')->with('errors', ['Operateur introuvable pour ce numero.']);
-    //     }
-
-    //     $bareme = (new FraisModel())->findForAmount((int) $operateur['id'], (int) $typeOperation['id'], $montant);
-    //     $montantFrais = $bareme ? (new FraisModel())->calculerFrais($bareme, $montant) : 0.0;
-    //     $soldeAvantSource = (float) $compteSource['solde'];
-    //     $soldeApresSource = $soldeAvantSource;
-
-    //     if ($operation === 'Depot') {
-    //         $soldeApresSource += $montant;
-    //     } else {
-    //         $totalDebit = $montant + $montantFrais;
-
-    //         if ($soldeAvantSource < $totalDebit) {
-    //             return redirect()->to('/compte')->with('errors', ['Solde insuffisant. Montant + frais: ' . number_format($totalDebit, 0, ',', ' ') . ' Ar.']);
-    //         }
-
-    //         $soldeApresSource -= $totalDebit;
-    //     }
-
-    //     $db->transStart();
-
-    //     $transactionId = $transactionModel->insert([
-    //         'id_type_operations' => (int) $typeOperation['id'],
-    //         'montant' => $montant,
-    //         'date' => date('Y-m-d'),
-    //         'id_compte_client' => (int) $compteSource['id'],
-    //         'id_compte_destinataire' => $compteDestinataire['id'] ?? null,
-    //         'montant_frais' => $montantFrais,
-    //     ]);
-
-    //     $compteModel->update((int) $compteSource['id'], ['solde' => $soldeApresSource]);
-    //     $historiqueModel->insert([
-    //         'id_transaction' => (int) $transactionId,
-    //         'date' => date('Y-m-d'),
-    //         'montant' => $montant,
-    //         'id_type_operations' => (int) $typeOperation['id'],
-    //         'solde_avant' => $soldeAvantSource,
-    //         'solde_apres' => $soldeApresSource,
-    //     ]);
-
-    //     if ($operation === 'Transfert' && $compteDestinataire !== null) {
-    //         $soldeAvantDestinataire = (float) $compteDestinataire['solde'];
-    //         $soldeApresDestinataire = $soldeAvantDestinataire + $montant;
-
-    //         $compteModel->update((int) $compteDestinataire['id'], ['solde' => $soldeApresDestinataire]);
-    //         $historiqueModel->insert([
-    //             'id_transaction' => (int) $transactionId,
-    //             'date' => date('Y-m-d'),
-    //             'montant' => $montant,
-    //             'id_type_operations' => (int) $typeOperation['id'],
-    //             'solde_avant' => $soldeAvantDestinataire,
-    //             'solde_apres' => $soldeApresDestinataire,
-    //         ]);
-    //     }
-
-    //     $db->transComplete();
-
-    //     if ($db->transStatus() === false) {
-    //         return redirect()->to('/compte')->with('errors', ['Erreur pendant l operation.']);
-    //     }
-
-    //     return redirect()->to('/compte')->with('success', $operation . ' effectue avec succes. Frais: ' . number_format($montantFrais, 0, ',', ' ') . ' Ar.');
-    // }
-
-    private function executerOperation(string $operation, array $compteSource, float $montant, ?array $compteDestinataire = null)
-{
-    $db = \Config\Database::connect();
-    $compteModel = new CompteClientModel();
-    $typeModel = new TypeOperationsModel();
-    $transactionModel = new TransactionModel();
-    $historiqueModel = new HistoriqueTransactionModel();
-    $fraisModel = new FraisModel();
-
-    $typeOperation = $typeModel->findByNom($operation);
-    $operateurSource = (new OperateurModel())->findByTelephone($compteSource['telephone']);
-
-    if (! $typeOperation) {
-        return redirect()->to('/compte')->with('errors', ['Type d operation introuvable: ' . $operation]);
-    }
-
-    if (! $operateurSource) {
-        return redirect()->to('/compte')->with('errors', ['Operateur introuvable pour ce numero.']);
-    }
-
-        $bareme = (new FraisModel())->findForAmount((int) $operateur['id'], (int) $typeOperation['id'], $montant);
-        $montantFrais = $bareme ? (new FraisModel())->calculerFrais($bareme, $montant) : 0.0;
-        $soldeAvantSource = (float) $compteSource['solde'];
-        $soldeApresSource = $soldeAvantSource;
-
-    // 3. Gestion des débits / crédits de la source
-    if ($operation === 'Depot') {
-        $soldeApresSource += $montant;
-    } else {
-        $totalDebit = $montant + $montantFrais;
-
-        if ($soldeAvantSource < $totalDebit) {
-            return redirect()->to('/compte')->with('errors', ['Solde insuffisant. Montant + frais: ' . number_format($totalDebit, 0, ',', ' ') . ' Ar.']);
+        if (! $typeOperation) {
+            return redirect()->to('/compte')->with('errors', ['Type d operation introuvable: ' . $operation]);
         }
 
-        $soldeApresSource -= $totalDebit;
-    }
+        if (! $operateur) {
+            return redirect()->to('/compte')->with('errors', ['Operateur introuvable pour ce numero.']);
+        }
 
-    $db->transStart();
+        if (($operateur['nom'] ?? '') !== 'OP') {
+            return redirect()->to('/compte')->with('errors', [$operation . ' disponible seulement pour les clients OP.']);
+        }
 
-    // Enregistrement de la transaction avec les frais payés par la source
-    $transactionId = $transactionModel->insert([
-        'id_type_operations' => (int) $typeOperation['id'],
-        'montant' => $montant,
-        'date' => date('Y-m-d'),
-        'id_compte_client' => (int) $compteSource['id'],
-        'id_compte_destinataire' => $compteDestinataire['id'] ?? null,
-        'montant_frais' => $montantFrais, 
-    ]);
+        $fraisModel = new FraisModel();
+        $bareme = $fraisModel->findForAmount((int) $operateur['id'], (int) $typeOperation['id'], $montant);
+        $montantFrais = $bareme ? $fraisModel->calculerFrais($bareme, $montant) : 0.0;
+        $soldeAvant = (float) $compte['solde'];
+        $soldeApres = $operation === 'Depot' ? $soldeAvant + $montant : $soldeAvant - ($montant + $montantFrais);
 
-    // Mise à jour et historique du compte source
-    $compteModel->update((int) $compteSource['id'], ['solde' => $soldeApresSource]);
-    $historiqueModel->insert([
-        'id_transaction' => (int) $transactionId,
-        'date' => date('Y-m-d'),
-        'montant' => $montant,
-        'id_type_operations' => (int) $typeOperation['id'],
-        'solde_avant' => $soldeAvantSource,
-        'solde_apres' => $soldeApresSource,
-    ]);
+        if ($soldeApres < 0) {
+            return redirect()->to('/compte')->with('errors', ['Solde insuffisant. Montant + frais: ' . number_format($montant + $montantFrais, 0, ',', ' ') . ' Ar.']);
+        }
 
-    // 4. Traitement du destinataire en cas de Transfert
-    if ($operation === 'Transfert' && $compteDestinataire !== null) {
-        $soldeAvantDestinataire = (float) $compteDestinataire['solde'];
-        
-        // Application de la déduction : si même opérateur, le destinataire reçoit (montant - frais de retrait)
-        $montantRecu = $montant - $fraisRetraitDestinataire;
-        $soldeApresDestinataire = $soldeAvantDestinataire + $montantRecu;
+        $db = \Config\Database::connect();
+        $transactionModel = new TransactionModel();
+        $compteModel = new CompteClientModel();
+        $historiqueModel = new HistoriqueTransactionModel();
 
-        $compteModel->update((int) $compteDestinataire['id'], ['solde' => $soldeApresDestinataire]);
+        $db->transStart();
+
+        $transactionId = $transactionModel->insert([
+            'id_type_operations' => (int) $typeOperation['id'],
+            'montant' => $montant,
+            'date' => date('Y-m-d'),
+            'id_compte_client' => (int) $compte['id'],
+            'id_compte_destinataire' => null,
+            'montant_frais' => $montantFrais,
+        ]);
+
+        $compteModel->update((int) $compte['id'], ['solde' => $soldeApres]);
         $historiqueModel->insert([
             'id_transaction' => (int) $transactionId,
             'date' => date('Y-m-d'),
-            // Le montant inscrit dans l'historique du destinataire reflète la somme nette ajoutée
-            'montant' => $montantRecu,
+            'montant' => $montant,
             'id_type_operations' => (int) $typeOperation['id'],
-            'solde_avant' => $soldeAvantDestinataire,
-            'solde_apres' => $soldeApresDestinataire,
+            'solde_avant' => $soldeAvant,
+            'solde_apres' => $soldeApres,
         ]);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->to('/compte')->with('errors', ['Erreur pendant l operation.']);
+        }
+
+        return redirect()->to('/compte')->with('success', $operation . ' effectue avec succes. Frais: ' . number_format($montantFrais, 0, ',', ' ') . ' Ar.');
     }
 
-    $db->transComplete();
+    private function executerTransferts(array $compteSource, float $montantTotal, array $telephones)
+    {
+        $compteModel = new CompteClientModel();
+        $operateurModel = new OperateurModel();
+        $typeOperation = (new TypeOperationsModel())->findByNom('Transfert');
+        $operateurSource = $operateurModel->findByTelephone($compteSource['telephone']);
+        $comptesDestinataires = [];
+        $errors = [];
 
-    if ($db->transStatus() === false) {
-        return redirect()->to('/compte')->with('errors', ['Erreur pendant l operation.']);
+        if (! $typeOperation) {
+            return redirect()->to('/compte')->with('errors', ['Type d operation introuvable: Transfert']);
+        }
+
+        if (! $operateurSource) {
+            return redirect()->to('/compte')->with('errors', ['Operateur introuvable pour ce numero.']);
+        }
+
+        foreach ($telephones as $telephone) {
+            $compteDestinataire = $compteModel->findByTelephone($telephone);
+            $operateurDestinataire = $operateurModel->findByTelephone($telephone);
+
+            if (! $compteDestinataire) {
+                $errors[] = 'Compte destinataire introuvable: ' . $telephone;
+                continue;
+            }
+
+            if ((int) $compteDestinataire['id'] === (int) $compteSource['id']) {
+                $errors[] = 'Impossible de transferer vers votre propre compte: ' . $telephone;
+                continue;
+            }
+
+            if (! $operateurDestinataire || ($operateurDestinataire['nom'] ?? '') !== ($operateurSource['nom'] ?? '')) {
+                $errors[] = 'Le numero ' . $telephone . ' n est pas du meme operateur que votre compte.';
+                continue;
+            }
+
+            $comptesDestinataires[] = [
+                'compte' => $compteDestinataire,
+                'operateur' => $operateurDestinataire,
+            ];
+        }
+
+        if ($errors !== []) {
+            return redirect()->to('/compte')->with('errors', $errors)->withInput();
+        }
+
+        $montants = $this->montantsPartages($montantTotal, count($comptesDestinataires));
+        $fraisModel = new FraisModel();
+        $totalFrais = 0.0;
+        $transferts = [];
+
+        foreach ($comptesDestinataires as $index => $destinataire) {
+            $montant = $montants[$index];
+            $bareme = $fraisModel->findForAmount((int) $operateurSource['id'], (int) $typeOperation['id'], $montant);
+            $frais = $bareme ? $fraisModel->calculerFrais($bareme, $montant) : 0.0;
+            $totalFrais += $frais;
+            $transferts[] = [
+                'compte' => $destinataire['compte'],
+                'montant' => $montant,
+                'frais' => $frais,
+            ];
+        }
+
+        $totalDebit = $montantTotal + $totalFrais;
+
+        if ((float) $compteSource['solde'] < $totalDebit) {
+            return redirect()->to('/compte')->with('errors', ['Solde insuffisant. Montant + frais: ' . number_format($totalDebit, 0, ',', ' ') . ' Ar.'])->withInput();
+        }
+
+        $db = \Config\Database::connect();
+        $transactionModel = new TransactionModel();
+        $historiqueModel = new HistoriqueTransactionModel();
+        $soldeSource = (float) $compteSource['solde'];
+
+        $db->transStart();
+
+        foreach ($transferts as $transfert) {
+            $soldeAvantSource = $soldeSource;
+            $soldeSource -= $transfert['montant'] + $transfert['frais'];
+
+            $transactionId = $transactionModel->insert([
+                'id_type_operations' => (int) $typeOperation['id'],
+                'montant' => $transfert['montant'],
+                'date' => date('Y-m-d'),
+                'id_compte_client' => (int) $compteSource['id'],
+                'id_compte_destinataire' => (int) $transfert['compte']['id'],
+                'montant_frais' => $transfert['frais'],
+            ]);
+
+            $historiqueModel->insert([
+                'id_transaction' => (int) $transactionId,
+                'date' => date('Y-m-d'),
+                'montant' => $transfert['montant'],
+                'id_type_operations' => (int) $typeOperation['id'],
+                'solde_avant' => $soldeAvantSource,
+                'solde_apres' => $soldeSource,
+            ]);
+
+            $soldeAvantDestinataire = (float) $transfert['compte']['solde'];
+            $soldeApresDestinataire = $soldeAvantDestinataire + $transfert['montant'];
+
+            $compteModel->update((int) $transfert['compte']['id'], ['solde' => $soldeApresDestinataire]);
+            $historiqueModel->insert([
+                'id_transaction' => (int) $transactionId,
+                'date' => date('Y-m-d'),
+                'montant' => $transfert['montant'],
+                'id_type_operations' => (int) $typeOperation['id'],
+                'solde_avant' => $soldeAvantDestinataire,
+                'solde_apres' => $soldeApresDestinataire,
+            ]);
+        }
+
+        $compteModel->update((int) $compteSource['id'], ['solde' => $soldeSource]);
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->to('/compte')->with('errors', ['Erreur pendant les transferts.']);
+        }
+
+        return redirect()->to('/compte')->with('success', count($transferts) . ' transfert(s) effectue(s). Montant partage: ' . number_format($montantTotal, 0, ',', ' ') . ' Ar. Frais: ' . number_format($totalFrais, 0, ',', ' ') . ' Ar.');
     }
 
-    // Message de succès dynamique informant des frais appliqués
-    $messageSucces = $operation . ' effectue avec succes.';
-    if ($memeOperateur) {
-        $messageSucces .= ' Même opérateur détecté : Frais de transfert source de ' . number_format($montantFrais, 0, ',', ' ') . ' Ar et frais de retrait déduits au destinataire de ' . number_format($fraisRetraitDestinataire, 0, ',', ' ') . ' Ar.';
-    } else {
-        $messageSucces .= ' Frais: ' . number_format($montantFrais, 0, ',', ' ') . ' Ar.';
+    private function telephonesDestinataires(): array
+    {
+        $telephoneInput = (string) $this->request->getPost('telephone_destinataire');
+        $telephones = preg_split('/[\s,;]+/', trim($telephoneInput));
+        $telephones = array_filter($telephones, static fn (string $telephone): bool => $telephone !== '');
+
+        return array_values(array_unique($telephones));
     }
 
-    return redirect()->to('/compte')->with('success', $messageSucces);
-}
+    private function montantsPartages(float $montantTotal, int $nombreDestinataires): array
+    {
+        $montantBase = floor(($montantTotal / $nombreDestinataires) * 100) / 100;
+        $montants = array_fill(0, $nombreDestinataires, $montantBase);
+        $reste = round($montantTotal - ($montantBase * $nombreDestinataires), 2);
+        $montants[$nombreDestinataires - 1] = round($montants[$nombreDestinataires - 1] + $reste, 2);
+
+        return $montants;
+    }
 
     private function currentCompte(): ?array
     {

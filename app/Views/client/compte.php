@@ -40,11 +40,12 @@
 
         <form method="post" action="/compte/transfert">
             <h3>Transfert</h3>
-            <label for="transfert_telephone">Telephone destinataire</label>
-            <input id="transfert_telephone" name="telephone_destinataire" type="text" placeholder="0337654321" required>
+            <label for="transfert_telephone">Telephone(s) destinataire(s)</label>
+            <textarea id="transfert_telephone" name="telephone_destinataire" placeholder="0381122334, 0341234567" required><?= esc(old('telephone_destinataire')) ?></textarea>
+            <p class="field-help">Separez plusieurs numeros par une virgule, un espace ou une ligne. Le montant sera divise entre eux.</p>
 
             <label for="transfert_montant">Montant</label>
-            <input id="transfert_montant" name="montant" type="number" min="1" step="1" required>
+            <input id="transfert_montant" name="montant" type="number" min="1" step="1" value="<?= esc(old('montant')) ?>" required>
 
             <button type="submit">Transferer</button>
         </form>
