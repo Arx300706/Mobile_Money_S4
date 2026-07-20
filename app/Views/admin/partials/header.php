@@ -9,11 +9,15 @@
 <body>
 <div class="topbar">
     <nav>
-        <a href="/test">Test DB</a>
-        <a href="/operateur">Operateurs</a>
-        <a href="/TypeOperation">Types operations</a>
-        <a href="/SituationGain">Situation gains</a>
-        <a href="/SituationClient">Situation clients</a>
+        <?php if (session()->get('role') === 'admin'): ?>
+            <a href="/test">Test DB</a>
+            <a href="/operateur">Operateurs</a>
+            <a href="/TypeOperation">Types operations</a>
+            <a href="/SituationGain">Situation gains</a>
+            <a href="/SituationClient">Situation clients</a>
+        <?php elseif (session()->get('role') === 'client'): ?>
+            <a href="/compte">Mon compte</a>
+        <?php endif; ?>
     </nav>
     <form method="post" action="/logout">
         <button class="secondary" type="submit">Deconnexion</button>
