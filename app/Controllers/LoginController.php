@@ -3,18 +3,19 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\ClientModel;
+use App\Models\CompteClientModel;
+use App\Models\OperateurModel;
 
 class LoginController extends BaseController
 {
     public function index()
     {
         if (session()->get('role') === 'admin') {
-            return redirect()->to('/admin');
+            return redirect()->to('/operateur');
         }
 
         if (session()->get('role') === 'client' && session()->get('client_id')) {
-            return redirect()->to('/accueil');
+            return redirect()->to('/compte');
         }
 
         return view('login', [
@@ -25,31 +26,41 @@ class LoginController extends BaseController
 
     public function clientConnexion()
     {
-        $client = trim((string) $this->request->getPost('client'));
+        $telephone = trim((string) $this->request->getPost('telephone'));
 
-        if (!$client) {
-            return redirect()->to('/')->with('error', 'Veuillez entrer le nom du client.');
+        if (!$telephone) {
+            return redirect()->to('/')->with('error', 'Veuillez entrer votre numero de telephone.');
         }
 
-        if (strtolower($client) === 'admin') {
+        if (strtolower($telephone) === 'admin') {
             session()->set('admin_login_pending', true);
 
             return redirect()->to('/admin/password');
         }
 
-        $clientModel = new ClientModel();
-        $clientId = $clientModel->insert([
-            'nom' => $client,
-            'date' => date('Y-m-d H:i:s'),
-        ]);
+        if (! preg_match('/^0[0-9]{9}$/', $telephone)) {
+            return redirect()->to('/')->with('error', 'Format invalide. Exemple attendu: 0341234567.');
+        }
+
+        if (! (new OperateurModel())->findByTelephone($telephone)) {
+            return redirect()->to('/')->with('error', 'Operateur introuvable pour ce numero.');
+        }
+
+        $compte = (new CompteClientModel())->findByTelephone($telephone);
+
+        if (! $compte) {
+            return redirect()->to('/')->with('error', 'Numero introuvable. Aucun compte client ne correspond a ce telephone.');
+        }
 
         session()->set([
             'role' => 'client',
-            'client_id' => (int) $clientId,
-            'client_nom' => $client,
+            'client_id' => (int) $compte['id_client'],
+            'compte_id' => (int) $compte['id'],
+            'client_nom' => trim($compte['nom'] . ' ' . $compte['prenom']),
+            'client_telephone' => $compte['telephone'],
         ]);
 
-        return redirect()->to('/accueil');
+        return redirect()->to('/compte');
     }
 
     public function adminPassword()
@@ -81,7 +92,7 @@ class LoginController extends BaseController
             'admin_nom' => 'Administrateur',
         ]);
 
-        return redirect()->to('/admin');
+        return redirect()->to('/operateur');
     }
 
     public function logout()
