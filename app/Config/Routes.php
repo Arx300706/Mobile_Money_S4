@@ -13,6 +13,15 @@ $routes->get('/operateur', 'OperateurController::index');
 $routes->get('/operateur/create', 'OperateurController::create');
 $routes->get('/operateur/edit', 'OperateurController::edit');
 
+$routes->get('/TypeOperation', 'TypeOperationController::index');
+$routes->post('/TypeOperation/store', 'TypeOperationController::store');
+$routes->post('/TypeOperation/update/(:num)', 'TypeOperationController::update/$1');
+$routes->post('/TypeOperation/delete/(:num)', 'TypeOperationController::delete/$1');
+
+$routes->post('/frais/store', 'FraisController::store');
+$routes->post('/frais/update/(:num)', 'FraisController::update/$1');
+$routes->post('/frais/delete/(:num)', 'FraisController::delete/$1');
+
 // $routes->get('/', 'LoginController::index');
 // $routes->post('/login/client', 'LoginController::clientConnexion');
 // $routes->post('/login/connexion', 'LoginController::clientConnexion');

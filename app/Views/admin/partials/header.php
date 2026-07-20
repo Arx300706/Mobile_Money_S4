@@ -91,6 +91,17 @@
             box-sizing: border-box;
         }
 
+        select {
+            width: 100%;
+            max-width: 430px;
+            padding: 9px;
+            border: 1px solid #b8c0c7;
+            border-radius: 4px;
+            margin-bottom: 14px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
         label {
             display: block;
             font-weight: bold;
@@ -141,6 +152,23 @@
             color: #9d1c1c;
             border: 1px solid #f3baba;
         }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 12px;
+            align-items: end;
+        }
+
+        .inline-form {
+            display: inline;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
     </style>
 </head>
 <body>
@@ -151,6 +179,7 @@
         <a href="/admin/clients">Clients</a>
         <a href="/admin/caisses">Caisses</a>
         <a href="/admin/achats">Achats</a>
+        <a href="/TypeOperation">Types operations</a>
     </nav>
     <form method="post" action="/logout">
         <button class="secondary" type="submit">Deconnexion</button>

@@ -17,6 +17,7 @@ class FraisModel extends Model
         'id_type_operations',
         'tranche_min',
         'tranche_max',
+        'type_frais',
         'montant_frais',
     ];
 
@@ -37,6 +38,7 @@ class FraisModel extends Model
         'id_type_operations'  => 'required|is_natural_no_zero',
         'tranche_min'         => 'required|integer|greater_than_equal_to[0]',
         'tranche_max'         => 'required|integer|greater_than_equal_to[0]',
+        'type_frais'          => 'required|in_list[fixe,pourcentage]',
         'montant_frais'       => 'required|numeric|greater_than_equal_to[0]',
     ];
     protected $validationMessages   = [];
@@ -60,6 +62,15 @@ class FraisModel extends Model
             ->where('tranche_min <=', $montant)
             ->where('tranche_max >=', $montant)
             ->first();
+    }
+
+    public function calculerFrais(array $bareme, float $montant): float
+    {
+        if (($bareme['type_frais'] ?? 'fixe') === 'pourcentage') {
+            return round($montant * ((float) $bareme['montant_frais'] / 100), 2);
+        }
+
+        return (float) $bareme['montant_frais'];
     }
 
     public function withDetails()

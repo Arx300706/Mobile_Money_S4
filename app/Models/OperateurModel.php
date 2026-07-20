@@ -61,7 +61,13 @@ class OperateurModel extends Model
 
     public function findByTelephone(string $telephone): ?array
     {
-        $prefixe = substr(preg_replace('/\D+/', '', $telephone), 0, 2);
+        $numero = preg_replace('/\D+/', '', $telephone);
+
+        if (str_starts_with($numero, '0')) {
+            $numero = substr($numero, 1);
+        }
+
+        $prefixe = substr($numero, 0, 2);
 
         if ($prefixe === '') {
             return null;
