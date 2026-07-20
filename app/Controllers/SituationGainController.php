@@ -31,7 +31,32 @@ class SituationGainController extends BaseController
             'totalGain' => array_sum(array_map(static fn (array $row): float => (float) $row['gain_total'], $summary)),
             'totalMontant' => array_sum(array_map(static fn (array $row): float => (float) $row['montant_total'], $summary)),
             'totalOperations' => array_sum(array_map(static fn (array $row): int => (int) $row['nombre_operations'], $summary)),
+            'totauxParOperateur' => $this->totauxParOperateur($summary),
         ]);
+    }
+
+    private function totauxParOperateur(array $summary): array
+    {
+        $totaux = [];
+
+        foreach ($summary as $row) {
+            $categorie = (string) ($row['categorie_operateur'] ?? 'Autres Operateurs');
+
+            if (! isset($totaux[$categorie])) {
+                $totaux[$categorie] = [
+                    'categorie_operateur' => $categorie,
+                    'gain_total' => 0.0,
+                    'montant_total' => 0.0,
+                    'nombre_operations' => 0,
+                ];
+            }
+
+            $totaux[$categorie]['gain_total'] += (float) $row['gain_total'];
+            $totaux[$categorie]['montant_total'] += (float) $row['montant_total'];
+            $totaux[$categorie]['nombre_operations'] += (int) $row['nombre_operations'];
+        }
+
+        return array_values($totaux);
     }
 
     private function cleanDate($date): ?string

@@ -138,6 +138,10 @@
                             <label for="montant_frais">Valeur</label>
                             <input id="montant_frais" name="montant_frais" type="number" min="0" step="0.01" required>
                         </div>
+                        <div>
+                            <label for="commission_autre_operateur">Commission autres %</label>
+                            <input id="commission_autre_operateur" name="commission_autre_operateur" type="number" min="0" step="0.01" value="0" required>
+                        </div>
                     </div>
                     <button class="primary-action" type="submit">Ajouter le bareme</button>
                 </form>
@@ -159,12 +163,13 @@
                         <th>Min</th>
                         <th>Max</th>
                         <th>Valeur</th>
+                        <th>Commission autres %</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                     <?php if ($frais === []): ?>
-                        <tr><td colspan="6">Aucune tranche pour ce filtre.</td></tr>
+                        <tr><td colspan="7">Aucune tranche pour ce filtre.</td></tr>
                     <?php endif; ?>
                     <?php foreach ($frais as $bareme): ?>
                         <tr>
@@ -194,6 +199,10 @@
                             <td>
                                 <input form="frais-update-<?= esc($bareme['id']) ?>" name="montant_frais" type="number" min="0" step="0.01" value="<?= esc($bareme['montant_frais']) ?>" required>
                                 <span class="badge">Ar</span>
+                            </td>
+                            <td>
+                                <input form="frais-update-<?= esc($bareme['id']) ?>" name="commission_autre_operateur" type="number" min="0" step="0.01" value="<?= esc($bareme['commission_autre_operateur'] ?? 0) ?>" required>
+                                <span class="badge">%</span>
                             </td>
                             <td>
                                 <div class="actions">

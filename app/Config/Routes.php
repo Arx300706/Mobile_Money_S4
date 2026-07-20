@@ -37,6 +37,7 @@ $routes->group('', ['filter' => 'admin'], static function ($routes) {
     $routes->post('/frais/delete/(:num)', 'FraisController::delete/$1');
 
     $routes->get('/SituationGain', 'SituationGainController::index');
+    $routes->get('/SituationMontantOperateur', 'SituationMontantOperateurController::index');
     $routes->get('/SituationClient', 'SituationClientController::index');
 });
 

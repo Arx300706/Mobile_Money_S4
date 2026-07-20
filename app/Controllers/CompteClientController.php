@@ -181,32 +181,10 @@ class CompteClientController extends BaseController
         return redirect()->to('/compte')->with('errors', ['Operateur introuvable pour ce numero.']);
     }
 
-    // 1. Calcul des frais initiaux de l'opération courante (Dépôt, Retrait ou Transfert)
-    $bareme = $fraisModel->findForAmount((int) $operateurSource['id'], (int) $typeOperation['id'], $montant);
-    $montantFrais = $bareme ? $fraisModel->calculerFrais($bareme, $montant) : 0.0;
-
-    // 2. Initialisation des variables spécifiques au Transfert Intra-Opérateur
-    $fraisRetraitDestinataire = 0.0;
-    $memeOperateur = false;
-
-    if ($operation === 'Transfert' && $compteDestinataire !== null) {
-        $operateurDestinataire = (new OperateurModel())->findByTelephone($compteDestinataire['telephone']);
-        
-        // Vérification si les deux opérateurs portent le même nom
-        if ($operateurDestinataire && $operateurSource['nom'] === $operateurDestinataire['nom']) {
-            $memeOperateur = true;
-            
-            // Récupération du type d'opération "Retrait" pour calculer ses frais correspondants
-            $typeRetrait = $typeModel->findByNom('Retrait');
-            if ($typeRetrait) {
-                $baremeRetrait = $fraisModel->findForAmount((int) $operateurDestinataire['id'], (int) $typeRetrait['id'], $montant);
-                $fraisRetraitDestinataire = $baremeRetrait ? $fraisModel->calculerFrais($baremeRetrait, $montant) : 0.0;
-            }
-        }
-    }
-
-    $soldeAvantSource = (float) $compteSource['solde'];
-    $soldeApresSource = $soldeAvantSource;
+        $bareme = (new FraisModel())->findForAmount((int) $operateur['id'], (int) $typeOperation['id'], $montant);
+        $montantFrais = $bareme ? (new FraisModel())->calculerFrais($bareme, $montant) : 0.0;
+        $soldeAvantSource = (float) $compteSource['solde'];
+        $soldeApresSource = $soldeAvantSource;
 
     // 3. Gestion des débits / crédits de la source
     if ($operation === 'Depot') {
