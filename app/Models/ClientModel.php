@@ -66,9 +66,18 @@ class ClientModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    // public function withCompte()
+    // {
+    //     return $this->select('client.*, compte_client.id AS compte_id, compte_client.date_creation, compte_client.solde')
+    //         ->join('compte_client', 'compte_client.id_client = client.id', 'left');
+    // }
     public function withCompte()
     {
         return $this->select('client.*, compte_client.id AS compte_id, compte_client.date_creation, compte_client.solde')
-            ->join('compte_client', 'compte_client.id_client = client.id', 'left');
+            ->join('compte_client', 'compte_client.id_client = client.id', 'inner')
+            // Jointure dynamique avec la table operateur basée sur le préfixe du téléphone
+            ->join('operateur', "client.telephone LIKE ('0' || operateur.prefixe || '%')", 'inner', false)
+            // Filtre strict sur le nom fixé "OP"
+            ->where('operateur.nom', 'OP');
     }
 }

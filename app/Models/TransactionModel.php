@@ -105,7 +105,7 @@ class TransactionModel extends Model
             // ('0' || operateur.prefixe || '%') permet de matcher par exemple '038%' sous SQLite
             ->join('operateur', "client.telephone LIKE ('0' || operateur.prefixe || '%')", 'inner', false)
             // Filtre strict sur le nom de l'opérateur
-            ->where('operateur.nom', 'Yas Money')
+            ->where('operateur.nom', 'OP')
             ->whereIn('type_operations.nom', ['Retrait', 'Transfert'])
             ->groupBy('type_operations.id, type_operations.nom')
             ->orderBy('type_operations.id', 'ASC');
@@ -141,7 +141,7 @@ class TransactionModel extends Model
             // Jointure dynamique avec la table operateur basée sur le préfixe du numéro de téléphone
             ->join('operateur', "client.telephone LIKE ('0' || operateur.prefixe || '%')", 'inner', false)
             // Filtre strict pour ne récupérer que l'opérateur Yas Money
-            ->where('operateur.nom', 'Yas Money')
+            ->where('operateur.nom', 'OP')
             ->whereIn('type_operations.nom', ['Retrait', 'Transfert'])
             ->orderBy('tr.date', 'DESC')
             ->orderBy('tr.id', 'DESC');

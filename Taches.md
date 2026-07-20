@@ -181,10 +181,11 @@
 # Version 2
 
 ## Configuration des prefixes valable pour les autres operateurs 
-1. [] ajout colonne pourcentage_commission dans l atable frais
+1. [] 
+2. [] 
 
 ## Configuration des commissions en pourcentage pour autres operateurs
-1. [ ] Analyse de la logique actuelle des frais - Ensemble
+1. [] Analyse de la logique actuelle des frais - Ensemble
    - verifier la table `frais`
    - verifier le champ `type_frais`
    - verifier le calcul actuel dans `FraisModel`
