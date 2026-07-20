@@ -181,8 +181,14 @@
 # Version 2
 
 ## Configuration des prefixes valable pour les autres operateurs 
-1. [] 
-2. [] 
+1. [] Logique de version 1 a corriger 
+   -  Ajout de input pour definir les prefixes de OP (notre operateur  )
+   -  filtrer par operateur les gains  
+      - modification des fonctions dans TransactionModel pour les rendre uniquement en fonction de notre operateur 
+         - gainsSummary
+         - gainsDetails
+      - modification de fonction dans ClientModel 
+         - 
 
 ## Configuration des commissions en pourcentage pour autres operateurs
 1. [] Analyse de la logique actuelle des frais - Ensemble
