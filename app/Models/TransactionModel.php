@@ -37,11 +37,11 @@ class TransactionModel extends Model
     // Validation
     protected $validationRules      = [
         'id_type_operations'      => 'required|is_natural_no_zero',
-        'montant'                 => 'required|decimal|greater_than[0]',
+        'montant'                 => 'required|numeric|greater_than[0]',
         'date'                    => 'permit_empty|valid_date[Y-m-d]',
         'id_compte_client'        => 'required|is_natural_no_zero',
         'id_compte_destinataire'  => 'permit_empty|is_natural_no_zero',
-        'montant_frais'           => 'permit_empty|decimal|greater_than_equal_to[0]',
+        'montant_frais'           => 'permit_empty|numeric|greater_than_equal_to[0]',
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
@@ -60,10 +60,23 @@ class TransactionModel extends Model
 
     public function withDetails()
     {
-        return $this->select('transaction.*, type_operations.nom AS type_operation, client.nom AS client_nom, client.prenom AS client_prenom, destinataire.id AS compte_destinataire_id')
+        return $this->select('transaction.*, type_operations.nom AS type_operation, client.nom AS client_nom, client.prenom AS client_prenom, destinataire.id AS compte_destinataire_id, client_destinataire.nom AS destinataire_nom, client_destinataire.prenom AS destinataire_prenom')
             ->join('type_operations', 'type_operations.id = transaction.id_type_operations')
             ->join('compte_client', 'compte_client.id = transaction.id_compte_client')
             ->join('client', 'client.id = compte_client.id_client')
-            ->join('compte_client AS destinataire', 'destinataire.id = transaction.id_compte_destinataire', 'left');
+            ->join('compte_client AS destinataire', 'destinataire.id = transaction.id_compte_destinataire', 'left')
+            ->join('client AS client_destinataire', 'client_destinataire.id = destinataire.id_client', 'left');
+    }
+
+    public function findByCompte(int $compteId): array
+    {
+        return $this->withDetails()
+            ->groupStart()
+                ->where('transaction.id_compte_client', $compteId)
+                ->orWhere('transaction.id_compte_destinataire', $compteId)
+            ->groupEnd()
+            ->orderBy('transaction.date', 'DESC')
+            ->orderBy('transaction.id', 'DESC')
+            ->findAll();
     }
 }

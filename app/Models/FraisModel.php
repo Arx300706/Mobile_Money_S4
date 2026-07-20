@@ -37,34 +37,21 @@ class FraisModel extends Model
         'id_type_operations'  => 'required|is_natural_no_zero',
         'tranche_min'         => 'required|integer|greater_than_equal_to[0]',
         'tranche_max'         => 'required|integer|greater_than_equal_to[0]',
-        'montant_frais'       => 'required|decimal|greater_than_equal_to[0]',
+        'montant_frais'       => 'required|numeric|greater_than_equal_to[0]',
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
     protected $allowCallbacks = true;
-    protected $beforeInsert   = ['verifierTranche'];
+    protected $beforeInsert   = [];
     protected $afterInsert    = [];
-    protected $beforeUpdate   = ['verifierTranche'];
+    protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-
-    protected function verifierTranche(array $data): array
-    {
-        if (! isset($data['data']['tranche_min'], $data['data']['tranche_max'])) {
-            return $data;
-        }
-
-        if ((int) $data['data']['tranche_max'] < (int) $data['data']['tranche_min']) {
-            $this->errors['tranche_max'] = 'La tranche maximale doit etre superieure ou egale a la tranche minimale.';
-        }
-
-        return $data;
-    }
 
     public function findForAmount(int $operateurId, int $typeOperationId, float $montant): ?array
     {
@@ -79,6 +66,28 @@ class FraisModel extends Model
     {
         return $this->select('frais.*, operateur.nom AS operateur_nom, type_operations.nom AS type_operation')
             ->join('operateur', 'operateur.id = frais.id_operateur')
-            ->join('type_operations', 'type_operations.id = frais.id_type_operations');
+            ->join('type_operations', 'type_operations.id = frais.id_type_operations')
+            ->orderBy('operateur.id', 'ASC')
+            ->orderBy('type_operations.id', 'ASC')
+            ->orderBy('frais.tranche_min', 'ASC');
+    }
+
+    public function hasOverlappingTranche(
+        int $operateurId,
+        int $typeOperationId,
+        int $trancheMin,
+        int $trancheMax,
+        ?int $ignoreId = null
+    ): bool {
+        $builder = $this->where('id_operateur', $operateurId)
+            ->where('id_type_operations', $typeOperationId)
+            ->where('tranche_min <=', $trancheMax)
+            ->where('tranche_max >=', $trancheMin);
+
+        if ($ignoreId !== null) {
+            $builder->where('id !=', $ignoreId);
+        }
+
+        return $builder->first() !== null;
     }
 }

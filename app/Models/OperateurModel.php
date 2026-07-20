@@ -53,4 +53,20 @@ class OperateurModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function findByPrefixe(int $prefixe): ?array
+    {
+        return $this->where('prefixe', $prefixe)->first();
+    }
+
+    public function findByTelephone(string $telephone): ?array
+    {
+        $prefixe = substr(preg_replace('/\D+/', '', $telephone), 0, 2);
+
+        if ($prefixe === '') {
+            return null;
+        }
+
+        return $this->findByPrefixe((int) $prefixe);
+    }
 }

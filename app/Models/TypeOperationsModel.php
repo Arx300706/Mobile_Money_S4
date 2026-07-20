@@ -51,4 +51,9 @@ class TypeOperationsModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function findByNom(string $nom): ?array
+    {
+        return $this->where('nom', $nom)->first();
+    }
 }

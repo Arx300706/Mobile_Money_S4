@@ -35,7 +35,7 @@ class CompteClientModel extends Model
     protected $validationRules      = [
         'id_client'     => 'required|is_natural_no_zero|is_unique[compte_client.id_client,id,{id}]',
         'date_creation' => 'permit_empty|valid_date[Y-m-d]',
-        'solde'         => 'permit_empty|decimal|greater_than_equal_to[0]',
+        'solde'         => 'permit_empty|numeric|greater_than_equal_to[0]',
     ];
     protected $validationMessages   = [
         'id_client' => [
@@ -60,5 +60,17 @@ class CompteClientModel extends Model
     {
         return $this->select('compte_client.*, client.nom, client.prenom, client.telephone')
             ->join('client', 'client.id = compte_client.id_client');
+    }
+
+    public function findByClientId(int $clientId): ?array
+    {
+        return $this->where('id_client', $clientId)->first();
+    }
+
+    public function findByTelephone(string $telephone): ?array
+    {
+        return $this->withClient()
+            ->where('client.telephone', $telephone)
+            ->first();
     }
 }
