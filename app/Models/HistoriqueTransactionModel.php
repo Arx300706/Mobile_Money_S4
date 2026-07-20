@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ClientModel extends Model
+class HistoriqueTransactionModel extends Model
 {
-    protected $table            = 'clients';
+    protected $table            = 'historiquetransactions';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';

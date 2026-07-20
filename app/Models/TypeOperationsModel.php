@@ -4,15 +4,17 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ClientModel extends Model
+class TypeOperationsModel extends Model
 {
-    protected $table            = 'clients';
+    protected $table            = 'typeoperations';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = [
+        'nom'
+    ];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

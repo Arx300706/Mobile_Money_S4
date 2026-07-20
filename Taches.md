@@ -7,10 +7,11 @@
 1. reflexion [x]  ensemble
 2. base.sql  [x]  ETU004231
 3. app/Config/Database.php [x]  ETU004196
-4. migrations [] 
+4. migrations [x] 
+## Creation Model 
 ## Gestion des prefixes []
 1.  Routes.php /prefixeListe , /prefixeFormulaire
-2.  Création PrefixeModel.php
+2.  Création Operateur.php
 3.  CRUD ajouter/modifier/supprimer un prefixe
 4.  Création PrefixeController.php
 5.  View/prefixeListe.php
