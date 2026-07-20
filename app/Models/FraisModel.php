@@ -59,6 +59,8 @@ class FraisModel extends Model
 
     public function findForAmount(int $operateurId, int $typeOperationId, float $montant): ?array
     {
+        $operateurId = $this->resolveBaremeOperateurId($operateurId);
+
         return $this->where('id_operateur', $operateurId)
             ->where('id_type_operations', $typeOperationId)
             ->where('tranche_min <=', $montant)
@@ -97,6 +99,8 @@ class FraisModel extends Model
         int $trancheMax,
         ?int $ignoreId = null
     ): bool {
+        $operateurId = $this->resolveBaremeOperateurId($operateurId);
+
         $builder = $this->where('id_operateur', $operateurId)
             ->where('id_type_operations', $typeOperationId)
             ->where('tranche_min <=', $trancheMax)
@@ -107,5 +111,25 @@ class FraisModel extends Model
         }
 
         return $builder->first() !== null;
+    }
+
+    private function resolveBaremeOperateurId(int $operateurId): int
+    {
+        $operateur = $this->db->table('operateur')
+            ->where('id', $operateurId)
+            ->get()
+            ->getRowArray();
+
+        if (($operateur['nom'] ?? '') !== 'OP') {
+            return $operateurId;
+        }
+
+        $primaryOp = $this->db->table('operateur')
+            ->where('nom', 'OP')
+            ->orderBy('id', 'ASC')
+            ->get()
+            ->getRowArray();
+
+        return $primaryOp ? (int) $primaryOp['id'] : $operateurId;
     }
 }

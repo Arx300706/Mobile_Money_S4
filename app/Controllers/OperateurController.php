@@ -56,7 +56,7 @@ class OperateurController extends BaseController
             }
 
             $model->insert([
-                'nom' => 'op',
+                'nom' => 'OP',
                 'prefixe' => $prefixe,
             ]);
         }

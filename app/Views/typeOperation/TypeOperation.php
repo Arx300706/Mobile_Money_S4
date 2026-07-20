@@ -118,6 +118,9 @@
                         <div>
                             <label for="id_operateur">Operateur</label>
                             <select id="id_operateur" name="id_operateur" required>
+                                <?php if ($operateurs === []): ?>
+                                    <option value="">Aucun operateur OP configure</option>
+                                <?php endif; ?>
                                 <?php foreach ($operateurs as $operateur): ?>
                                     <option value="<?= esc($operateur['id']) ?>"><?= esc($operateur['nom']) ?></option>
                                 <?php endforeach; ?>
@@ -167,6 +170,9 @@
                         <tr>
                             <td>
                                 <select form="frais-update-<?= esc($bareme['id']) ?>" name="id_operateur" required>
+                                    <?php if ($operateurs === []): ?>
+                                        <option value="">Aucun operateur OP configure</option>
+                                    <?php endif; ?>
                                     <?php foreach ($operateurs as $operateur): ?>
                                         <option value="<?= esc($operateur['id']) ?>" <?= (int) $bareme['id_operateur'] === (int) $operateur['id'] ? 'selected' : '' ?>>
                                             <?= esc($operateur['nom']) ?>

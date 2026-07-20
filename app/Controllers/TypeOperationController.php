@@ -20,9 +20,17 @@ class TypeOperationController extends BaseController
             $fraisQuery->where('frais.id_type_operations', $selectedTypeId);
         }
 
+        $operateurOp = $this->primaryOperateurOp();
+
+        if ($operateurOp) {
+            $fraisQuery->where('frais.id_operateur', (int) $operateurOp['id']);
+        } else {
+            $fraisQuery->where('operateur.nom', 'OP');
+        }
+
         return view('typeOperation/TypeOperation', [
             'types' => $typeModel->orderBy('id', 'ASC')->findAll(),
-            'operateurs' => (new OperateurModel())->orderBy('nom', 'ASC')->findAll(),
+            'operateurs' => $this->operateursOp(),
             'frais' => $fraisQuery->findAll(),
             'selectedTypeId' => $selectedTypeId,
             'success' => session()->getFlashdata('success'),
@@ -33,7 +41,7 @@ class TypeOperationController extends BaseController
     public function create()
     {
         return view('typeOperation/form', [
-            'operateurs' => (new OperateurModel())->orderBy('nom', 'ASC')->findAll(),
+            'operateurs' => $this->operateursOp(),
             'errors' => session()->getFlashdata('errors') ?? [],
         ]);
     }
@@ -147,6 +155,11 @@ class TypeOperationController extends BaseController
                 continue;
             }
 
+            if (! $this->isOperateurOp($data['id_operateur'])) {
+                $errors[] = 'Les baremes doivent etre configures seulement sur OP.';
+                continue;
+            }
+
             if ($fraisModel->hasOverlappingTranche(
                 $data['id_operateur'],
                 $typeId,
@@ -168,5 +181,27 @@ class TypeOperationController extends BaseController
     private function validTypeFrais(string $typeFrais): string
     {
         return in_array($typeFrais, ['fixe', 'pourcentage'], true) ? $typeFrais : 'fixe';
+    }
+
+    private function operateursOp(): array
+    {
+        $operateur = $this->primaryOperateurOp();
+
+        return $operateur ? [$operateur] : [];
+    }
+
+    private function isOperateurOp(int $operateurId): bool
+    {
+        $operateurOp = $this->primaryOperateurOp();
+
+        return $operateurOp !== null && (int) $operateurOp['id'] === $operateurId;
+    }
+
+    private function primaryOperateurOp(): ?array
+    {
+        return (new OperateurModel())
+            ->where('nom', 'OP')
+            ->orderBy('id', 'ASC')
+            ->first();
     }
 }

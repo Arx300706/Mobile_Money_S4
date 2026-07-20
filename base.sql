@@ -19,13 +19,15 @@ CREATE TABLE frais (
     tranche_max INTEGER NOT NULL,
     type_frais VARCHAR(20) NOT NULL DEFAULT 'fixe',
     montant_frais DECIMAL(10, 2) NOT NULL,
+    commission_autre_operateur DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (id_operateur) REFERENCES operateur(id),
     FOREIGN KEY (id_type_operations) REFERENCES type_operations(id),
     UNIQUE (id_operateur, id_type_operations, tranche_min, tranche_max),
     CHECK (tranche_min >= 0),
     CHECK (tranche_max >= tranche_min),
     CHECK (type_frais IN ('fixe', 'pourcentage')),
-    CHECK (montant_frais >= 0)
+    CHECK (montant_frais >= 0),
+    CHECK (commission_autre_operateur >= 0)
 );
 
 
@@ -80,10 +82,10 @@ CREATE TABLE historique_transaction (
 
 
 INSERT INTO operateur (id, nom, prefixe) VALUES
-    (1, 'Notre Operateur', 34),
+    (1, 'OP', 34),
     (2, 'Autres Operateurs', 33),
     (3, 'Autres Operateurs', 32),
-    (4, 'Notre Operateur', 38);
+    (4, 'OP', 38);
 
 INSERT INTO type_operations (id, nom) VALUES
     (1, 'Depot'),
