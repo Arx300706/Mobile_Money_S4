@@ -44,11 +44,22 @@
         <div class="stat">Operations<strong><?= esc($totalOperations) ?></strong></div>
     </div>
 
+    <div class="stats">
+        <?php foreach ($totauxParOperateur as $totalOperateur): ?>
+            <div class="stat">
+                <?= esc($totalOperateur['categorie_operateur']) ?>
+                <strong><?= number_format((float) $totalOperateur['gain_total'], 0, ',', ' ') ?> Ar</strong>
+                <span class="muted"><?= number_format((float) $totalOperateur['montant_total'], 0, ',', ' ') ?> Ar / <?= esc($totalOperateur['nombre_operations']) ?> operation(s)</span>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
     <div class="panel">
-        <h2>Gain par type d'operation</h2>
+        <h2>Gain par operateur et type d'operation</h2>
         <table>
             <thead>
             <tr>
+                <th>Operateur</th>
                 <th>Operation</th>
                 <th>Nombre</th>
                 <th>Montant traite</th>
@@ -57,10 +68,11 @@
             </thead>
             <tbody>
             <?php if ($summary === []): ?>
-                <tr><td colspan="4">Aucun gain pour ce filtre.</td></tr>
+                <tr><td colspan="5">Aucun gain pour ce filtre.</td></tr>
             <?php endif; ?>
             <?php foreach ($summary as $row): ?>
                 <tr>
+                    <td><?= esc($row['categorie_operateur']) ?></td>
                     <td><?= esc($row['type_operation']) ?></td>
                     <td><?= esc($row['nombre_operations']) ?></td>
                     <td><?= number_format((float) $row['montant_total'], 0, ',', ' ') ?> Ar</td>
@@ -77,6 +89,7 @@
             <thead>
             <tr>
                 <th>Date</th>
+                <th>Operateur</th>
                 <th>Operation</th>
                 <th>Client</th>
                 <th>Telephone</th>
@@ -86,11 +99,12 @@
             </thead>
             <tbody>
             <?php if ($details === []): ?>
-                <tr><td colspan="6">Aucune operation.</td></tr>
+                <tr><td colspan="7">Aucune operation.</td></tr>
             <?php endif; ?>
             <?php foreach ($details as $transaction): ?>
                 <tr>
                     <td><?= esc($transaction['date']) ?></td>
+                    <td><?= esc($transaction['categorie_operateur']) ?></td>
                     <td><?= esc($transaction['type_operation']) ?></td>
                     <td><?= esc(trim($transaction['client_nom'] . ' ' . $transaction['client_prenom'])) ?></td>
                     <td><?= esc($transaction['telephone']) ?></td>

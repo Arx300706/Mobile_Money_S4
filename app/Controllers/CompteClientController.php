@@ -99,8 +99,21 @@ class CompteClientController extends BaseController
             return redirect()->to('/compte')->with('errors', ['Operateur introuvable pour ce numero.']);
         }
 
-        $bareme = (new FraisModel())->findForAmount((int) $operateur['id'], (int) $typeOperation['id'], $montant);
-        $montantFrais = $bareme ? (new FraisModel())->calculerFrais($bareme, $montant) : 0.0;
+        if (in_array($operation, ['Depot', 'Retrait'], true) && ($operateur['nom'] ?? '') !== 'OP') {
+            return redirect()->to('/compte')->with('errors', [$operation . ' disponible seulement pour les clients OP.']);
+        }
+
+        $fraisModel = new FraisModel();
+        $bareme = $fraisModel->findForAmount((int) $operateur['id'], (int) $typeOperation['id'], $montant);
+        $montantFrais = $bareme ? $fraisModel->calculerFrais($bareme, $montant) : 0.0;
+
+        if ($operation === 'Transfert' && $bareme && $compteDestinataire !== null) {
+            $operateurDestinataire = (new OperateurModel())->findByTelephone($compteDestinataire['telephone']);
+
+            if ($operateurDestinataire && ($operateurDestinataire['nom'] ?? '') !== 'OP') {
+                $montantFrais += $fraisModel->calculerCommissionAutreOperateur($bareme, $montant);
+            }
+        }
         $soldeAvantSource = (float) $compteSource['solde'];
         $soldeApresSource = $soldeAvantSource;
 

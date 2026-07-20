@@ -14,6 +14,7 @@
             <a href="/operateur">Operateurs</a>
             <a href="/TypeOperation">Types operations</a>
             <a href="/SituationGain">Situation gains</a>
+            <a href="/SituationMontantOperateur">Montants operateurs</a>
             <a href="/SituationClient">Situation clients</a>
         <?php elseif (session()->get('role') === 'client'): ?>
             <a href="/compte">Mon compte</a>

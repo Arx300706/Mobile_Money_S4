@@ -27,6 +27,7 @@
                     <th>Min</th>
                     <th>Max</th>
                     <th>Valeur</th>
+                    <th>Commission autres %</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -45,6 +46,7 @@
                         <td><input name="tranche_min[]" type="number" min="0" step="1" placeholder="0"></td>
                         <td><input name="tranche_max[]" type="number" min="0" step="1" placeholder="10000"></td>
                         <td><input name="montant_frais[]" type="number" min="0" step="0.01" placeholder="200"></td>
+                        <td><input name="commission_autre_operateur[]" type="number" min="0" step="0.01" placeholder="0"></td>
                     </tr>
                 <?php endfor; ?>
                 </tbody>
