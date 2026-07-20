@@ -24,4 +24,9 @@
         <button class="secondary" type="submit">Deconnexion</button>
     </form>
 </div>
+<div class="brand-strip">
+    <a class="op-logo" href="<?= session()->get('role') === 'client' ? '/compte' : '/operateur' ?>" aria-label="Accueil OP">
+        <span>OP</span>
+    </a>
+</div>
 <main class="page">
