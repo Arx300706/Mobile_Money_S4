@@ -1,5 +1,3 @@
-CREATE DATABASE IF NOT EXISTS mobile_money.db;
-
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE operateur (
@@ -10,7 +8,7 @@ CREATE TABLE operateur (
 
 CREATE TABLE type_operations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL UNIQUE CHECK (nom IN ('Depot', 'Retrait', 'Transfert'))
+    nom VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE frais (
