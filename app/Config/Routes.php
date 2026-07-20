@@ -10,8 +10,9 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/test', 'TestController::index');
 
 $routes->get('/operateur', 'OperateurController::index');
-$routes->get('/operateur/create', 'OperateurController::create');
+$routes->get('/operateur/save', 'OperateurController::save');
 $routes->get('/operateur/edit', 'OperateurController::edit');
+$routes->get('/operateur/delete', 'OperateurController::delete');
 
 $routes->get('/TypeOperation', 'TypeOperationController::index');
 $routes->post('/TypeOperation/store', 'TypeOperationController::store');
