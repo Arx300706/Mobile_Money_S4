@@ -8,14 +8,13 @@
 2. base.sql  [x]  ETU004231
 3. app/Config/Database.php [x]  ETU004196
 4. migrations [x] 
-## Creation Model 
+## Creation des Model []
 ## Gestion des prefixes []
-1.  Routes.php /prefixeListe , /prefixeFormulaire
-2.  Création Operateur.php
+1.  Routes.php /operateur , /operateur/create
+2.  Operateur.php
 3.  CRUD ajouter/modifier/supprimer un prefixe
-4.  Création PrefixeController.php
-5.  View/prefixeListe.php
-6.  View/prefixeFormulaire.php
+4.  Création OperateurController.php
+5.  View/operateur.php
 ## Gestion des types d'opérations et baremes de frais
 1.  Routes.php /TypeOperation
 2.  TypeOperationModel.php   , FraisModel.php
