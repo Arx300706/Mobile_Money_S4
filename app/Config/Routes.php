@@ -35,6 +35,7 @@ $routes->post('/frais/update/(:num)', 'FraisController::update/$1');
 $routes->post('/frais/delete/(:num)', 'FraisController::delete/$1');
 
 $routes->get('/SituationGain', 'SituationGainController::index');
+$routes->get('/SituationClient', 'SituationClientController::index');
 
 $routes->group('', ['filter' => 'client'], static function ($routes) {
     $routes->get('/compte', 'CompteClientController::index');

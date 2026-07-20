@@ -13,6 +13,7 @@
         <a href="/operateur">Operateurs</a>
         <a href="/TypeOperation">Types operations</a>
         <a href="/SituationGain">Situation gains</a>
+        <a href="/SituationClient">Situation clients</a>
     </nav>
     <form method="post" action="/logout">
         <button class="secondary" type="submit">Deconnexion</button>

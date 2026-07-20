@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
     <link rel="stylesheet" href="/style/styles.css">
 </head>
@@ -19,14 +21,14 @@
     <div class="panel">
         <h2>Connexion client</h2>
         <form method="post" action="/login/client">
-            <label>Numero de telephone :</label><br>
-            <input type="text" name="telephone" placeholder="03XXXXXXXX" required autofocus>
+            <label for="telephone">Numero de telephone</label>
+            <input id="telephone" type="text" name="telephone" placeholder="03XXXXXXXX" required autofocus>
             <button type="submit">Acceder au compte</button>
         </form>
     </div>
 
-    <p>Pour l'administration, entrez <strong>admin</strong> comme numero.</p>
-    <p>Pour le client, entrez un numero de telephone <strong>0341234567</strong></p>
+    <p class="auth-help">Admin : entrez <strong>admin</strong> comme numero.</p>
+    <p class="auth-help">Client test : <strong>0341234567</strong></p>
 </div>
 
 </body>

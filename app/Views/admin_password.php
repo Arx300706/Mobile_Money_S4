@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mot de passe admin</title>
     <link rel="stylesheet" href="/style/styles.css">
 </head>
@@ -14,11 +16,11 @@
 
     <div class="panel">
         <form method="post" action="/admin/password">
-            <label>Mot de passe :</label><br>
-            <input type="password" name="password" required autofocus>
+            <label for="password">Mot de passe</label>
+            <input id="password" type="password" name="password" required autofocus>
             <button type="submit">Valider</button>
             <a class="button secondary" href="/">Annuler</a>
-             <p>Pour l'administration, entrez <strong>admin123</strong> comme mot de passe.</p>
+            <p class="auth-help">Mot de passe admin : <strong>admin123</strong></p>
         </form>
     </div>
 </div>
