@@ -1,0 +1,2 @@
+$routes->get('/login', 'LoginController::index');
+$routes->post('/login/connexion', 'LoginController::connexion');
