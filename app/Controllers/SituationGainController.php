@@ -16,7 +16,7 @@ class SituationGainController extends BaseController
         $summary = $transactionModel->gainsSummary($dateDebut, $dateFin, $typeOperationId);
         $details = $transactionModel->gainsDetails($dateDebut, $dateFin, $typeOperationId);
 
-        return view('SituationGain', [
+        return view('situation/SituationGain', [
             'summary' => $summary,
             'details' => $details,
             'types' => (new TypeOperationsModel())

@@ -21,9 +21,11 @@ $routes->get('/operateur/create', 'OperateurController::create');
 $routes->post('/operateur/store', 'OperateurController::store');
 $routes->get('/operateur/edit/(:num)', 'OperateurController::edit/$1');
 $routes->post('/operateur/update/(:num)', 'OperateurController::update/$1');
+$routes->get('/operateur/delete/(:num)', 'OperateurController::delete/$1');
 $routes->post('/operateur/delete/(:num)', 'OperateurController::delete/$1');
 
 $routes->get('/TypeOperation', 'TypeOperationController::index');
+$routes->get('/TypeOperation/create', 'TypeOperationController::create');
 $routes->post('/TypeOperation/store', 'TypeOperationController::store');
 $routes->post('/TypeOperation/update/(:num)', 'TypeOperationController::update/$1');
 $routes->post('/TypeOperation/delete/(:num)', 'TypeOperationController::delete/$1');
@@ -40,4 +42,3 @@ $routes->group('', ['filter' => 'client'], static function ($routes) {
     $routes->post('/compte/retrait', 'CompteClientController::retrait');
     $routes->post('/compte/transfert', 'CompteClientController::transfert');
 });
-

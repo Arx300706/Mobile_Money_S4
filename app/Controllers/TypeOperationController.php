@@ -20,12 +20,20 @@ class TypeOperationController extends BaseController
             $fraisQuery->where('frais.id_type_operations', $selectedTypeId);
         }
 
-        return view('TypeOperations', [
+        return view('typeOperation/TypeOperation', [
             'types' => $typeModel->orderBy('id', 'ASC')->findAll(),
             'operateurs' => (new OperateurModel())->orderBy('nom', 'ASC')->findAll(),
             'frais' => $fraisQuery->findAll(),
             'selectedTypeId' => $selectedTypeId,
             'success' => session()->getFlashdata('success'),
+            'errors' => session()->getFlashdata('errors') ?? [],
+        ]);
+    }
+
+    public function create()
+    {
+        return view('typeOperation/form', [
+            'operateurs' => (new OperateurModel())->orderBy('nom', 'ASC')->findAll(),
             'errors' => session()->getFlashdata('errors') ?? [],
         ]);
     }
@@ -44,7 +52,7 @@ class TypeOperationController extends BaseController
         if (! $typeId) {
             $db->transRollback();
 
-            return redirect()->to('/TypeOperation')->with('errors', $typeModel->errors())->withInput();
+            return redirect()->to('/TypeOperation/create')->with('errors', $typeModel->errors())->withInput();
         }
 
         $errors = $this->enregistrerBaremes($fraisModel, (int) $typeId);
@@ -52,7 +60,7 @@ class TypeOperationController extends BaseController
         if ($errors !== []) {
             $db->transRollback();
 
-            return redirect()->to('/TypeOperation')->with('errors', $errors)->withInput();
+            return redirect()->to('/TypeOperation/create')->with('errors', $errors)->withInput();
         }
 
         $db->transComplete();
@@ -114,7 +122,6 @@ class TypeOperationController extends BaseController
         $operateurs = (array) $this->request->getPost('id_operateur');
         $mins = (array) $this->request->getPost('tranche_min');
         $maxs = (array) $this->request->getPost('tranche_max');
-        $types = (array) $this->request->getPost('type_frais');
         $montants = (array) $this->request->getPost('montant_frais');
         $errors = [];
 
@@ -128,7 +135,7 @@ class TypeOperationController extends BaseController
                 'id_type_operations' => $typeId,
                 'tranche_min' => (int) $min,
                 'tranche_max' => (int) ($maxs[$index] ?? 0),
-                'type_frais' => (string) ($types[$index] ?? 'fixe'),
+                'type_frais' => 'fixe',
                 'montant_frais' => (float) ($montants[$index] ?? 0),
             ];
 

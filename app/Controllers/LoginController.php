@@ -4,18 +4,18 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\CompteClientModel;
-use App\Models\ClientModel;
+use App\Models\OperateurModel;
 
 class LoginController extends BaseController
 {
     public function index()
     {
         if (session()->get('role') === 'admin') {
-            return redirect()->to('/admin');
+            return redirect()->to('/operateur');
         }
 
         if (session()->get('role') === 'client' && session()->get('client_id')) {
-            return redirect()->to('/accueil');
+            return redirect()->to('/compte');
         }
 
         return view('login', [
@@ -36,6 +36,14 @@ class LoginController extends BaseController
             session()->set('admin_login_pending', true);
 
             return redirect()->to('/admin/password');
+        }
+
+        if (! preg_match('/^0[0-9]{9}$/', $telephone)) {
+            return redirect()->to('/')->with('error', 'Format invalide. Exemple attendu: 0341234567.');
+        }
+
+        if (! (new OperateurModel())->findByTelephone($telephone)) {
+            return redirect()->to('/')->with('error', 'Operateur introuvable pour ce numero.');
         }
 
         $compte = (new CompteClientModel())->findByTelephone($telephone);
@@ -84,7 +92,7 @@ class LoginController extends BaseController
             'admin_nom' => 'Administrateur',
         ]);
 
-        return redirect()->to('/admin');
+        return redirect()->to('/operateur');
     }
 
     public function logout()

@@ -32,6 +32,7 @@ class OperateurModel extends Model
 
     // Validation
     protected $validationRules      = [
+        'id'      => 'permit_empty|is_natural_no_zero',
         'nom'     => 'required|max_length[100]',
         'prefixe' => 'required|integer|is_unique[operateur.prefixe,id,{id}]',
     ];
