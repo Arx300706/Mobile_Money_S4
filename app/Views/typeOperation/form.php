@@ -34,6 +34,9 @@
                     <tr>
                         <td>
                             <select name="id_operateur[]">
+                                <?php if ($operateurs === []): ?>
+                                    <option value="">Aucun operateur OP configure</option>
+                                <?php endif; ?>
                                 <?php foreach ($operateurs as $operateur): ?>
                                     <option value="<?= esc($operateur['id']) ?>"><?= esc($operateur['nom']) ?></option>
                                 <?php endforeach; ?>

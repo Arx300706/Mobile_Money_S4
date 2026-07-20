@@ -3,9 +3,15 @@
 namespace App\Controllers;
 
 use App\Models\FraisModel;
+use App\Models\OperateurModel;
 
 class FraisController extends BaseController
 {
+    public function create()
+    {
+        return redirect()->to('/TypeOperation');
+    }
+
     public function store()
     {
         $fraisModel = new FraisModel();
@@ -96,6 +102,10 @@ class FraisController extends BaseController
             $errors[] = 'La tranche max doit etre superieure ou egale a la tranche min.';
         }
 
+        if (! $this->isOperateurOp($data['id_operateur'])) {
+            $errors[] = 'Les baremes doivent etre configures seulement sur OP.';
+        }
+
         if ($fraisModel->hasOverlappingTranche(
             $data['id_operateur'],
             $data['id_type_operations'],
@@ -107,5 +117,20 @@ class FraisController extends BaseController
         }
 
         return $errors;
+    }
+
+    private function isOperateurOp(int $operateurId): bool
+    {
+        $operateurOp = $this->primaryOperateurOp();
+
+        return $operateurOp !== null && (int) $operateurOp['id'] === $operateurId;
+    }
+
+    private function primaryOperateurOp(): ?array
+    {
+        return (new OperateurModel())
+            ->where('nom', 'OP')
+            ->orderBy('id', 'ASC')
+            ->first();
     }
 }

@@ -31,6 +31,7 @@ $routes->group('', ['filter' => 'admin'], static function ($routes) {
     $routes->post('/TypeOperation/update/(:num)', 'TypeOperationController::update/$1');
     $routes->post('/TypeOperation/delete/(:num)', 'TypeOperationController::delete/$1');
 
+    $routes->get('/frais/store', 'FraisController::create');
     $routes->post('/frais/store', 'FraisController::store');
     $routes->post('/frais/update/(:num)', 'FraisController::update/$1');
     $routes->post('/frais/delete/(:num)', 'FraisController::delete/$1');
