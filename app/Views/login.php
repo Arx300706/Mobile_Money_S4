@@ -81,6 +81,7 @@
     </div>
 
     <p>Pour l'administration, entrez <strong>admin</strong> comme numero.</p>
+    <p>Client existant <strong>0341234567</strong></p>
 </div>
 
 </body>

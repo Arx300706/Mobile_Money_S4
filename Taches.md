@@ -59,3 +59,8 @@ validation du numero ( format correct et operateur existant)
 3. [] view login.php
 - input numero telephone 
 - bouton acceder au compte 
+
+## situation des comptes clients 
+1. [] Routes.Php 
+2. 
+## compte du client 
