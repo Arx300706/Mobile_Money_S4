@@ -177,3 +177,85 @@
 - ETU004196 : configuration, routes, controllers, logique metier, tests techniques.
 - ETU004231 : base de donnees, models, vues, CSS, presentation et experience utilisateur.
 - Ensemble : reflexion, tests navigateur, validation finale.
+
+# Version 2
+
+## Configuration des commissions en pourcentage pour autres operateurs
+1. [ ] Analyse de la logique actuelle des frais - Ensemble
+   - verifier la table `frais`
+   - verifier le champ `type_frais`
+   - verifier le calcul actuel dans `FraisModel`
+   - verifier le calcul actuel dans `CompteClientController`
+
+2. [ ] Mise a jour du modele `FraisModel` - ETU004231
+   - autoriser `type_frais` avec les valeurs `fixe` et `pourcentage`
+   - modifier `calculerFrais()` pour calculer :
+     - frais fixe : montant direct
+     - frais pourcentage : montant * pourcentage / 100
+
+3. [ ] Configuration des frais en pourcentage - ETU004231
+   - ajouter le choix du type de frais dans le formulaire des baremes
+   - afficher si la valeur est en Ar ou en %
+   - permettre la modification du type de frais
+
+4. [ ] Detection des transferts vers autres operateurs - ETU004196
+   - detecter l'operateur du client source avec son numero telephone
+   - detecter l'operateur du destinataire avec son numero telephone
+   - comparer les deux operateurs
+   - identifier si le transfert est :
+     - meme operateur
+     - autre operateur
+
+5. [ ] Application de la commission supplementaire - ETU004196
+   - appliquer les frais normaux du transfert
+   - ajouter une commission en pourcentage si le destinataire est chez un autre operateur
+   - verifier le solde avec montant + frais total
+   - enregistrer le frais total dans la transaction
+
+## Separation des gains par operateur et autres operateurs
+1. [ ] Mise a jour de la requete des gains - ETU004196
+   - recuperer le telephone du client source
+   - recuperer le telephone du destinataire pour les transferts
+   - detecter les operateurs source et destinataire
+   - classer les transferts en meme operateur ou autres operateurs
+
+2. [ ] Mise a jour de `TransactionModel` - ETU004196
+   - separer les gains de retrait
+   - separer les gains de transfert meme operateur
+   - separer les gains de transfert autres operateurs
+   - calculer le nombre d'operations pour chaque categorie
+   - calculer le montant traite pour chaque categorie
+   - calculer le gain total pour chaque categorie
+
+3. [ ] Mise a jour de `SituationGainController` - ETU004196
+   - envoyer les nouveaux regroupements a la vue
+   - garder les filtres par date debut, date fin et operation
+   - recalculer les totaux selon les nouvelles categories
+
+4. [ ] Mise a jour de la vue `situation/SituationGain.php` - ETU004231
+   - afficher un tableau separe :
+     - Retrait
+     - Transfert meme operateur
+     - Transfert autres operateurs
+   - afficher dans le detail des transactions la categorie du transfert
+   - ajouter les colonnes operateur source et operateur destinataire si necessaire
+
+## Tests et verification
+1. [ ] Test transfert meme operateur - Ensemble
+   - exemple : Telma vers Telma
+   - verifier que seuls les frais normaux sont appliques
+
+2. [ ] Test transfert autres operateurs - Ensemble
+   - exemple : Telma vers Airtel
+   - verifier que les frais normaux + commission en pourcentage sont appliques
+
+3. [ ] Test affichage SituationGain - Ensemble
+   - verifier le gain des retraits
+   - verifier le gain des transferts meme operateur
+   - verifier le gain des transferts autres operateurs
+
+4. [ ] Verification technique - ETU004196
+   - verifier les routes
+   - verifier la syntaxe PHP
+   - verifier les requetes SQL
+   - verifier que les anciens frais fixes fonctionnent encore
