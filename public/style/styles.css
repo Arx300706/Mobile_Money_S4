@@ -207,6 +207,13 @@ select:focus {
     outline: none;
 }
 
+.field-help {
+    max-width: 430px;
+    margin: -8px 0 14px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
 table {
     width: 100%;
     border-collapse: separate;

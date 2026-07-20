@@ -18,10 +18,17 @@
 <?php endif; ?>
 
 <div class="panel">
-    <div class="right">
-        <a class="button" href="/operateur/create">Ajouter un operateur</a>
-    </div>
+    <h2>Prefixes de notre operateur</h2>
+    <form method="post" action="/operateur/store">
+        <label for="prefixe">Prefixes telephone</label>
+        <input id="prefixe" name="prefixe" type="text" inputmode="numeric" pattern="[0-9,;\s]+" value="<?= esc(old('prefixe')) ?>" placeholder="Ex: 34, 38" required>
+        <p class="field-help">Ces prefixes seront classes comme op. Les autres seront classes comme Autres Operateurs.</p>
 
+        <button type="submit">Enregistrer</button>
+    </form>
+</div>
+
+<div class="panel">
     <table>
         <thead>
         <tr>

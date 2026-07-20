@@ -60,6 +60,13 @@ class OperateurModel extends Model
         return $this->where('prefixe', $prefixe)->first();
     }
 
+    public function findAutresOperateurs(): ?array
+    {
+        return $this->where('nom', 'Autres Operateurs')
+            ->orderBy('id', 'ASC')
+            ->first();
+    }
+
     public function findByTelephone(string $telephone): ?array
     {
         $numero = preg_replace('/\D+/', '', $telephone);
@@ -74,6 +81,6 @@ class OperateurModel extends Model
             return null;
         }
 
-        return $this->findByPrefixe((int) $prefixe);
+        return $this->findByPrefixe((int) $prefixe) ?? $this->findAutresOperateurs();
     }
 }
