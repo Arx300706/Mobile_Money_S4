@@ -6,13 +6,17 @@ use CodeIgniter\Model;
 
 class CompteClientModel extends Model
 {
-    protected $table            = 'compteclients';
+    protected $table            = 'compte_client';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = [
+        'id_client',
+        'date_creation',
+        'solde',
+    ];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -28,8 +32,16 @@ class CompteClientModel extends Model
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
+    protected $validationRules      = [
+        'id_client'     => 'required|is_natural_no_zero|is_unique[compte_client.id_client,id,{id}]',
+        'date_creation' => 'permit_empty|valid_date[Y-m-d]',
+        'solde'         => 'permit_empty|decimal|greater_than_equal_to[0]',
+    ];
+    protected $validationMessages   = [
+        'id_client' => [
+            'is_unique' => 'Ce client possede deja un compte.',
+        ],
+    ];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
@@ -43,4 +55,10 @@ class CompteClientModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function withClient()
+    {
+        return $this->select('compte_client.*, client.nom, client.prenom, client.telephone')
+            ->join('client', 'client.id = compte_client.id_client');
+    }
 }

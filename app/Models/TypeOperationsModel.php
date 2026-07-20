@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class TypeOperationsModel extends Model
 {
-    protected $table            = 'typeoperations';
+    protected $table            = 'type_operations';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
@@ -30,8 +30,14 @@ class TypeOperationsModel extends Model
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
+    protected $validationRules      = [
+        'nom' => 'required|max_length[50]|is_unique[type_operations.nom,id,{id}]',
+    ];
+    protected $validationMessages   = [
+        'nom' => [
+            'is_unique' => 'Ce type d operation existe deja.',
+        ],
+    ];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 

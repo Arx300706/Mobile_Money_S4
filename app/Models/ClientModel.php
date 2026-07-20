@@ -6,13 +6,20 @@ use CodeIgniter\Model;
 
 class ClientModel extends Model
 {
-    protected $table            = 'clients';
+    protected $table            = 'client';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = [
+        'nom',
+        'prenom',
+        'date_naissance',
+        'adresse',
+        'email',
+        'telephone',
+    ];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -28,8 +35,22 @@ class ClientModel extends Model
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
+    protected $validationRules      = [
+        'nom'            => 'required|max_length[100]',
+        'prenom'         => 'required|max_length[100]',
+        'date_naissance' => 'required|valid_date[Y-m-d]',
+        'adresse'        => 'required|max_length[255]',
+        'email'          => 'required|valid_email|max_length[150]|is_unique[client.email,id,{id}]',
+        'telephone'      => 'required|max_length[20]|is_unique[client.telephone,id,{id}]',
+    ];
+    protected $validationMessages   = [
+        'email' => [
+            'is_unique' => 'Cette adresse email est deja utilisee.',
+        ],
+        'telephone' => [
+            'is_unique' => 'Ce telephone est deja utilise.',
+        ],
+    ];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
@@ -43,4 +64,10 @@ class ClientModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function withCompte()
+    {
+        return $this->select('client.*, compte_client.id AS compte_id, compte_client.date_creation, compte_client.solde')
+            ->join('compte_client', 'compte_client.id_client = client.id', 'left');
+    }
 }
