@@ -79,4 +79,49 @@ class TransactionModel extends Model
             ->orderBy('transaction.id', 'DESC')
             ->findAll();
     }
+
+    public function gainsSummary(?string $dateDebut = null, ?string $dateFin = null, ?int $typeOperationId = null): array
+    {
+        $builder = $this->db->table('"transaction" AS tr')
+            ->select('type_operations.id AS type_id, type_operations.nom AS type_operation, COUNT(tr.id) AS nombre_operations, SUM(tr.montant) AS montant_total, SUM(tr.montant_frais) AS gain_total')
+            ->join('type_operations', 'type_operations.id = tr.id_type_operations')
+            ->whereIn('type_operations.nom', ['Retrait', 'Transfert'])
+            ->groupBy('type_operations.id, type_operations.nom')
+            ->orderBy('type_operations.id', 'ASC');
+
+        $this->applyGainsFilters($builder, $dateDebut, $dateFin, $typeOperationId);
+
+        return $builder->get()->getResultArray();
+    }
+
+    public function gainsDetails(?string $dateDebut = null, ?string $dateFin = null, ?int $typeOperationId = null): array
+    {
+        $builder = $this->db->table('"transaction" AS tr')
+            ->select('tr.*, type_operations.nom AS type_operation, client.nom AS client_nom, client.prenom AS client_prenom, client.telephone')
+            ->join('type_operations', 'type_operations.id = tr.id_type_operations')
+            ->join('compte_client', 'compte_client.id = tr.id_compte_client')
+            ->join('client', 'client.id = compte_client.id_client')
+            ->whereIn('type_operations.nom', ['Retrait', 'Transfert'])
+            ->orderBy('tr.date', 'DESC')
+            ->orderBy('tr.id', 'DESC');
+
+        $this->applyGainsFilters($builder, $dateDebut, $dateFin, $typeOperationId);
+
+        return $builder->get()->getResultArray();
+    }
+
+    private function applyGainsFilters($builder, ?string $dateDebut, ?string $dateFin, ?int $typeOperationId): void
+    {
+        if ($dateDebut) {
+            $builder->where('tr.date >=', $dateDebut);
+        }
+
+        if ($dateFin) {
+            $builder->where('tr.date <=', $dateFin);
+        }
+
+        if ($typeOperationId !== null && $typeOperationId > 0) {
+            $builder->where('type_operations.id', $typeOperationId);
+        }
+    }
 }

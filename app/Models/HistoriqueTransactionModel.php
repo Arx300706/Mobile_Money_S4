@@ -60,17 +60,17 @@ class HistoriqueTransactionModel extends Model
 
     public function withDetails()
     {
-        return $this->select('historique_transaction.*, type_operations.nom AS type_operation, transaction.id_compte_client, transaction.id_compte_destinataire')
+        return $this->select('historique_transaction.*, type_operations.nom AS type_operation, tr.id_compte_client, tr.id_compte_destinataire')
             ->join('type_operations', 'type_operations.id = historique_transaction.id_type_operations')
-            ->join('transaction', 'transaction.id = historique_transaction.id_transaction');
+            ->join('"transaction" AS tr', 'tr.id = historique_transaction.id_transaction');
     }
 
     public function findByCompte(int $compteId): array
     {
         return $this->withDetails()
             ->groupStart()
-                ->where('transaction.id_compte_client', $compteId)
-                ->orWhere('transaction.id_compte_destinataire', $compteId)
+                ->where('tr.id_compte_client', $compteId)
+                ->orWhere('tr.id_compte_destinataire', $compteId)
             ->groupEnd()
             ->orderBy('historique_transaction.date', 'DESC')
             ->orderBy('historique_transaction.id', 'DESC')

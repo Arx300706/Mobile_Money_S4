@@ -8,18 +8,26 @@
         <tr>
             <th>ID</th>
             <th>Nom</th>
-            <th>Date</th>
+            <th>Prenom</th>
+            <th>Date naissance</th>
+            <th>Adresse</th>
+            <th>Email</th>
+            <th>Telephone</th>
         </tr>
         </thead>
         <tbody>
         <?php if ($clients === []): ?>
-            <tr><td colspan="3">Aucun client.</td></tr>
+            <tr><td colspan="7">Aucun client.</td></tr>
         <?php endif; ?>
         <?php foreach ($clients as $client): ?>
             <tr>
                 <td><?= esc($client['id']) ?></td>
                 <td><?= esc($client['nom']) ?></td>
-                <td><?= esc($client['date']) ?></td>
+                <td><?= esc($client['prenom'] ?? '') ?></td>
+                <td><?= esc($client['date_naissance'] ?? '') ?></td>
+                <td><?= esc($client['adresse'] ?? '') ?></td>
+                <td><?= esc($client['email'] ?? '') ?></td>
+                <td><?= esc($client['telephone'] ?? '') ?></td>
             </tr>
         <?php endforeach; ?>
         </tbody>

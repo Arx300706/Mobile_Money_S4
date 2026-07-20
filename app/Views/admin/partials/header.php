@@ -174,12 +174,10 @@
 <body>
 <div class="topbar">
     <nav>
-        <a href="/admin">Tableau de bord</a>
-        <a href="/admin/produits">Produits</a>
-        <a href="/admin/clients">Clients</a>
-        <a href="/admin/caisses">Caisses</a>
-        <a href="/admin/achats">Achats</a>
+        <a href="/test">Test DB</a>
+        <a href="/operateur">Operateurs</a>
         <a href="/TypeOperation">Types operations</a>
+        <a href="/SituationGain">Situation gains</a>
     </nav>
     <form method="post" action="/logout">
         <button class="secondary" type="submit">Deconnexion</button>

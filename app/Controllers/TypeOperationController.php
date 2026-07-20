@@ -89,7 +89,7 @@ class TypeOperationController extends BaseController
             return redirect()->to('/TypeOperation')->with('errors', ['Type d operation introuvable.']);
         }
 
-        $usedInTransactions = $db->table('transaction')
+        $usedInTransactions = $db->table('"transaction"')
             ->where('id_type_operations', $id)
             ->countAllResults();
         $usedInHistory = $db->table('historique_transaction')

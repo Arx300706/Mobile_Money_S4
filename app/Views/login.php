@@ -61,7 +61,7 @@
 </head>
 <body>
 <div class="page">
-    <h1>Connexion supermarche</h1>
+    <h1>Connexion Mobile Money</h1>
 
     <?php if ($success): ?>
         <div class="message success"><?= esc($success) ?></div>
@@ -74,11 +74,13 @@
     <div class="panel">
         <h2>Connexion client</h2>
         <form method="post" action="/login/client">
-            <label>Nom du client :</label><br>
-            <input type="text" name="client" required>
-            <button type="submit">Entrer comme client</button>
+            <label>Numero de telephone :</label><br>
+            <input type="text" name="telephone" placeholder="0341234567" required autofocus>
+            <button type="submit">Acceder au compte</button>
         </form>
     </div>
+
+    <p>Pour l'administration, entrez <strong>admin</strong> comme numero.</p>
 </div>
 
 </body>

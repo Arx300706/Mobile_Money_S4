@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\CompteClientModel;
 use App\Models\ClientModel;
 
 class LoginController extends BaseController
@@ -25,31 +26,33 @@ class LoginController extends BaseController
 
     public function clientConnexion()
     {
-        $client = trim((string) $this->request->getPost('client'));
+        $telephone = trim((string) $this->request->getPost('telephone'));
 
-        if (!$client) {
-            return redirect()->to('/')->with('error', 'Veuillez entrer le nom du client.');
+        if (!$telephone) {
+            return redirect()->to('/')->with('error', 'Veuillez entrer votre numero de telephone.');
         }
 
-        if (strtolower($client) === 'admin') {
+        if (strtolower($telephone) === 'admin') {
             session()->set('admin_login_pending', true);
 
             return redirect()->to('/admin/password');
         }
 
-        $clientModel = new ClientModel();
-        $clientId = $clientModel->insert([
-            'nom' => $client,
-            'date' => date('Y-m-d H:i:s'),
-        ]);
+        $compte = (new CompteClientModel())->findByTelephone($telephone);
+
+        if (! $compte) {
+            return redirect()->to('/')->with('error', 'Numero introuvable. Aucun compte client ne correspond a ce telephone.');
+        }
 
         session()->set([
             'role' => 'client',
-            'client_id' => (int) $clientId,
-            'client_nom' => $client,
+            'client_id' => (int) $compte['id_client'],
+            'compte_id' => (int) $compte['id'],
+            'client_nom' => trim($compte['nom'] . ' ' . $compte['prenom']),
+            'client_telephone' => $compte['telephone'],
         ]);
 
-        return redirect()->to('/accueil');
+        return redirect()->to('/compte');
     }
 
     public function adminPassword()
