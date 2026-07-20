@@ -1,11 +1,12 @@
 Tâches communes (à faire ensemble, en premier — J1 matin)
-Init projet CodeIgniter 4 + config SQLite (app/Config/Database.php)
-Conception du schéma base.sql (tables : operateurs_prefixes, types_operations, baremes_frais, comptes, transactions)
-Structure Git (branches, .gitignore, premier commit, tag v1 prévu en fin de partie)
-Création du Taches.md avec la convention de suivi
-👤 Étudiant etu04231 — Côté Opérateur (Back-office / Config)
+-Creation d'un depots git
+-creation (app/Config/Database.php)
+-creation du database:
+    -Creation des differents tables,vues
 
-1. Gestion des préfixes
+Etudiant ETU04231 — Côté Opérateur (Back-office / Config)
+
+ Gestion des préfixes
 
 Modèle PrefixeModel + migration/table
 CRUD (ajouter/modifier/supprimer un préfixe, ex: 033, 037)
@@ -26,7 +27,7 @@ Dashboard "Situation des comptes clients" : liste des comptes, soldes, dernière
 4. Authentification opérateur (simple)
 
 Login opérateur basique (peut être un compte unique en dur ou table admins)
-👤 Étudiant etu4196 — Côté Client (Opérations & UX)
+Etudiant ETU4196 — Côté Client (Opérations & UX)
 
 1. Authentification client
 
