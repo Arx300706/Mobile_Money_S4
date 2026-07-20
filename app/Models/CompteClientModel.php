@@ -33,6 +33,7 @@ class CompteClientModel extends Model
 
     // Validation
     protected $validationRules      = [
+        'id'            => 'permit_empty|is_natural_no_zero',
         'id_client'     => 'required|is_natural_no_zero|is_unique[compte_client.id_client,id,{id}]',
         'date_creation' => 'permit_empty|valid_date[Y-m-d]',
         'solde'         => 'permit_empty|numeric|greater_than_equal_to[0]',

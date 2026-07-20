@@ -31,6 +31,7 @@ class TypeOperationsModel extends Model
 
     // Validation
     protected $validationRules      = [
+        'id'  => 'permit_empty|is_natural_no_zero',
         'nom' => 'required|max_length[50]|is_unique[type_operations.nom,id,{id}]',
     ];
     protected $validationMessages   = [

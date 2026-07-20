@@ -36,6 +36,7 @@ class ClientModel extends Model
 
     // Validation
     protected $validationRules      = [
+        'id'             => 'permit_empty|is_natural_no_zero',
         'nom'            => 'required|max_length[100]',
         'prenom'         => 'required|max_length[100]',
         'date_naissance' => 'required|valid_date[Y-m-d]',

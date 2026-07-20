@@ -77,7 +77,7 @@ class FraisController extends BaseController
             'id_type_operations' => (int) $this->request->getPost('id_type_operations'),
             'tranche_min' => (int) $this->request->getPost('tranche_min'),
             'tranche_max' => (int) $this->request->getPost('tranche_max'),
-            'type_frais' => (string) $this->request->getPost('type_frais'),
+            'type_frais' => 'fixe',
             'montant_frais' => (float) $this->request->getPost('montant_frais'),
         ];
     }
