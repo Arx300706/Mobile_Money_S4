@@ -1,6 +1,6 @@
 <?= view('admin/partials/header', ['title' => 'Mon compte']) ?>
 
-<h1>Mon compte Mobile Money</h1>
+<h1>Mon compte OP</h1>
 
 <?php if ($success): ?>
     <div class="message success"><?= esc($success) ?></div>
