@@ -1,6 +1,9 @@
 <?= view('admin/partials/header', ['title' => 'Operateurs']) ?>
 
 <h1>Operateurs</h1>
+<form action="/TypeOperation" method="get">
+    <button type="submit" class="secondary">Voir les types d'operations</button>
+</form>
 
 <?php if ($success): ?>
     <div class="message success"><?= esc($success) ?></div>
