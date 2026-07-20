@@ -123,6 +123,8 @@ class TypeOperationController extends BaseController
         $mins = (array) $this->request->getPost('tranche_min');
         $maxs = (array) $this->request->getPost('tranche_max');
         $montants = (array) $this->request->getPost('montant_frais');
+        $typesFrais = (array) $this->request->getPost('type_frais');
+        $commissionsAutresOperateurs = (array) $this->request->getPost('commission_autre_operateur');
         $errors = [];
 
         foreach ($mins as $index => $min) {
@@ -135,8 +137,9 @@ class TypeOperationController extends BaseController
                 'id_type_operations' => $typeId,
                 'tranche_min' => (int) $min,
                 'tranche_max' => (int) ($maxs[$index] ?? 0),
-                'type_frais' => 'fixe',
+                'type_frais' => $this->validTypeFrais((string) ($typesFrais[$index] ?? 'fixe')),
                 'montant_frais' => (float) ($montants[$index] ?? 0),
+                'commission_autre_operateur' => (float) ($commissionsAutresOperateurs[$index] ?? 0),
             ];
 
             if ($data['tranche_max'] < $data['tranche_min']) {
@@ -160,5 +163,10 @@ class TypeOperationController extends BaseController
         }
 
         return $errors;
+    }
+
+    private function validTypeFrais(string $typeFrais): string
+    {
+        return in_array($typeFrais, ['fixe', 'pourcentage'], true) ? $typeFrais : 'fixe';
     }
 }
