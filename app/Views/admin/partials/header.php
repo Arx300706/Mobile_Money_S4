@@ -10,7 +10,7 @@
 <div class="topbar">
     <nav>
         <?php if (session()->get('role') === 'admin'): ?>
-            <a href="/test">Test DB</a>
+            <!-- <a href="/test">Test DB</a> -->
             <a href="/operateur">Operateurs</a>
             <a href="/TypeOperation">Types operations</a>
             <a href="/SituationGain">Situation gains</a>

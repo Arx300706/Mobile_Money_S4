@@ -77,9 +77,15 @@ class FraisController extends BaseController
             'id_type_operations' => (int) $this->request->getPost('id_type_operations'),
             'tranche_min' => (int) $this->request->getPost('tranche_min'),
             'tranche_max' => (int) $this->request->getPost('tranche_max'),
-            'type_frais' => 'fixe',
+            'type_frais' => $this->validTypeFrais((string) $this->request->getPost('type_frais')),
             'montant_frais' => (float) $this->request->getPost('montant_frais'),
+            'commission_autre_operateur' => (float) $this->request->getPost('commission_autre_operateur'),
         ];
+    }
+
+    private function validTypeFrais(string $typeFrais): string
+    {
+        return in_array($typeFrais, ['fixe', 'pourcentage'], true) ? $typeFrais : 'fixe';
     }
 
     private function validateBareme(FraisModel $fraisModel, array $data, ?int $ignoreId = null): array

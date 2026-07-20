@@ -80,10 +80,10 @@ CREATE TABLE historique_transaction (
 
 
 INSERT INTO operateur (id, nom, prefixe) VALUES
-    (1, 'Telma MVola', 34),
-    (2, 'Airtel Money', 33),
-    (3, 'Orange Money', 32),
-    (4, 'Yas Money', 38);
+    (1, 'Notre Operateur', 34),
+    (2, 'Autres Operateurs', 33),
+    (3, 'Autres Operateurs', 32),
+    (4, 'Notre Operateur', 38);
 
 INSERT INTO type_operations (id, nom) VALUES
     (1, 'Depot'),

@@ -19,6 +19,7 @@ class FraisModel extends Model
         'tranche_max',
         'type_frais',
         'montant_frais',
+        'commission_autre_operateur',
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -38,8 +39,9 @@ class FraisModel extends Model
         'id_type_operations'  => 'required|is_natural_no_zero',
         'tranche_min'         => 'required|integer|greater_than_equal_to[0]',
         'tranche_max'         => 'required|integer|greater_than_equal_to[0]',
-        'type_frais'          => 'permit_empty|in_list[fixe]',
+        'type_frais'          => 'required|in_list[fixe,pourcentage]',
         'montant_frais'       => 'required|numeric|greater_than_equal_to[0]',
+        'commission_autre_operateur' => 'permit_empty|numeric|greater_than_equal_to[0]',
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
@@ -66,7 +68,16 @@ class FraisModel extends Model
 
     public function calculerFrais(array $bareme, float $montant): float
     {
+        if (($bareme['type_frais'] ?? 'fixe') === 'pourcentage') {
+            return $montant * (float) $bareme['montant_frais'] / 100;
+        }
+
         return (float) $bareme['montant_frais'];
+    }
+
+    public function calculerCommissionAutreOperateur(array $bareme, float $montant): float
+    {
+        return $montant * (float) ($bareme['commission_autre_operateur'] ?? 0) / 100;
     }
 
     public function withDetails()
