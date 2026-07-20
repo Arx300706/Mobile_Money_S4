@@ -28,6 +28,7 @@ CREATE TABLE frais (
     CHECK (montant_frais >= 0)
 );
 
+
 CREATE TABLE client (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nom VARCHAR(100) NOT NULL,
@@ -76,6 +77,7 @@ CREATE TABLE historique_transaction (
     CHECK (solde_avant >= 0),
     CHECK (solde_apres >= 0)
 );
+
 
 INSERT INTO operateur (id, nom, prefixe) VALUES
     (1, 'Telma MVola', 34),

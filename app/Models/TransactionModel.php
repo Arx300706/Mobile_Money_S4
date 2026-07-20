@@ -80,11 +80,32 @@ class TransactionModel extends Model
             ->findAll();
     }
 
+    // public function gainsSummary(?string $dateDebut = null, ?string $dateFin = null, ?int $typeOperationId = null): array
+    // {
+    //     $builder = $this->db->table('"transaction" AS tr')
+    //         ->select('type_operations.id AS type_id, type_operations.nom AS type_operation, COUNT(tr.id) AS nombre_operations, SUM(tr.montant) AS montant_total, SUM(tr.montant_frais) AS gain_total')
+    //         ->join('type_operations', 'type_operations.id = tr.id_type_operations')
+    //         ->whereIn('type_operations.nom', ['Retrait', 'Transfert'])
+    //         ->groupBy('type_operations.id, type_operations.nom')
+    //         ->orderBy('type_operations.id', 'ASC');
+
+    //     $this->applyGainsFilters($builder, $dateDebut, $dateFin, $typeOperationId);
+
+    //     return $builder->get()->getResultArray();
+    // }
+
     public function gainsSummary(?string $dateDebut = null, ?string $dateFin = null, ?int $typeOperationId = null): array
     {
         $builder = $this->db->table('"transaction" AS tr')
             ->select('type_operations.id AS type_id, type_operations.nom AS type_operation, COUNT(tr.id) AS nombre_operations, SUM(tr.montant) AS montant_total, SUM(tr.montant_frais) AS gain_total')
             ->join('type_operations', 'type_operations.id = tr.id_type_operations')
+            ->join('compte_client', 'compte_client.id = tr.id_compte_client')
+            ->join('client', 'client.id = compte_client.id_client')
+            // Jointure avec la table operateur basée sur le préfixe présent dans le numéro de téléphone
+            // ('0' || operateur.prefixe || '%') permet de matcher par exemple '038%' sous SQLite
+            ->join('operateur', "client.telephone LIKE ('0' || operateur.prefixe || '%')", 'inner', false)
+            // Filtre strict sur le nom de l'opérateur
+            ->where('operateur.nom', 'Yas Money')
             ->whereIn('type_operations.nom', ['Retrait', 'Transfert'])
             ->groupBy('type_operations.id, type_operations.nom')
             ->orderBy('type_operations.id', 'ASC');
@@ -94,6 +115,22 @@ class TransactionModel extends Model
         return $builder->get()->getResultArray();
     }
 
+    // public function gainsDetails(?string $dateDebut = null, ?string $dateFin = null, ?int $typeOperationId = null): array
+    // {
+    //     $builder = $this->db->table('"transaction" AS tr')
+    //         ->select('tr.*, type_operations.nom AS type_operation, client.nom AS client_nom, client.prenom AS client_prenom, client.telephone')
+    //         ->join('type_operations', 'type_operations.id = tr.id_type_operations')
+    //         ->join('compte_client', 'compte_client.id = tr.id_compte_client')
+    //         ->join('client', 'client.id = compte_client.id_client')
+    //         ->whereIn('type_operations.nom', ['Retrait', 'Transfert'])
+    //         ->orderBy('tr.date', 'DESC')
+    //         ->orderBy('tr.id', 'DESC');
+
+    //     $this->applyGainsFilters($builder, $dateDebut, $dateFin, $typeOperationId);
+
+    //     return $builder->get()->getResultArray();
+    // }
+
     public function gainsDetails(?string $dateDebut = null, ?string $dateFin = null, ?int $typeOperationId = null): array
     {
         $builder = $this->db->table('"transaction" AS tr')
@@ -101,6 +138,10 @@ class TransactionModel extends Model
             ->join('type_operations', 'type_operations.id = tr.id_type_operations')
             ->join('compte_client', 'compte_client.id = tr.id_compte_client')
             ->join('client', 'client.id = compte_client.id_client')
+            // Jointure dynamique avec la table operateur basée sur le préfixe du numéro de téléphone
+            ->join('operateur', "client.telephone LIKE ('0' || operateur.prefixe || '%')", 'inner', false)
+            // Filtre strict pour ne récupérer que l'opérateur Yas Money
+            ->where('operateur.nom', 'Yas Money')
             ->whereIn('type_operations.nom', ['Retrait', 'Transfert'])
             ->orderBy('tr.date', 'DESC')
             ->orderBy('tr.id', 'DESC');
