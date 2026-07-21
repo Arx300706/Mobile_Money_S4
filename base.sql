@@ -65,6 +65,21 @@ CREATE TABLE "transaction" (
     CHECK (montant_frais >= 0)
 );
 
+CREATE TABLE promotion_frais (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    id_type_operations INTEGER NOT NULL,
+    cible VARCHAR(50) NOT NULL DEFAULT 'meme_operateur',
+    type_promotion VARCHAR(20) NOT NULL DEFAULT 'pourcentage',
+    valeur DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    actif INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (id_type_operations) REFERENCES type_operations(id),
+    CHECK (cible IN ('meme_operateur')),
+    CHECK (type_promotion IN ('fixe', 'pourcentage')),
+    CHECK (valeur >= 0),
+    CHECK (actif IN (0, 1))
+);
+
 CREATE TABLE historique_transaction (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     id_transaction INTEGER NOT NULL,
@@ -91,6 +106,9 @@ INSERT INTO type_operations (id, nom) VALUES
     (1, 'Depot'),
     (2, 'Retrait'),
     (3, 'Transfert');
+
+INSERT INTO promotion_frais (id, nom, id_type_operations, cible, type_promotion, valeur, actif) VALUES
+    (1, 'Promotion frais transfert meme operateur', 3, 'meme_operateur', 'pourcentage', 0, 0);
 
 INSERT INTO frais (id, id_operateur, id_type_operations, tranche_min, tranche_max, type_frais, montant_frais) VALUES
     (1, 1, 1, 0, 10000, 'fixe', 0),

@@ -6,6 +6,7 @@ use App\Models\CompteClientModel;
 use App\Models\FraisModel;
 use App\Models\HistoriqueTransactionModel;
 use App\Models\OperateurModel;
+use App\Models\PromotionFraisModel;
 use App\Models\TransactionModel;
 use App\Models\TypeOperationsModel;
 
@@ -198,6 +199,8 @@ class CompteClientController extends BaseController
 
         $montants = $this->montantsPartages($montantTotal, count($comptesDestinataires));
         $fraisModel = new FraisModel();
+        $promotionModel = new PromotionFraisModel();
+        $promotionMemeOperateur = $promotionModel->findActiveForTransfertMemeOperateur((int) $typeOperation['id']);
         $totalFrais = 0.0;
         $transferts = [];
 
@@ -230,6 +233,8 @@ class CompteClientController extends BaseController
                     $errors[] = 'Le montant net pour ' . $destinataire['compte']['telephone'] . ' doit rester superieur a 0 apres commission et frais de retrait.';
                     continue;
                 }
+            } elseif ($promotionMemeOperateur) {
+                $fraisTransfert -= $promotionModel->calculerReduction($promotionMemeOperateur, $fraisTransfert);
             }
 
             $fraisTotal = $fraisTransfert + $commissionAutreOperateur + $fraisRetraitDestinataire;

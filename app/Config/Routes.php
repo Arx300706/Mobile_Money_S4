@@ -36,6 +36,9 @@ $routes->group('', ['filter' => 'admin'], static function ($routes) {
     $routes->post('/frais/update/(:num)', 'FraisController::update/$1');
     $routes->post('/frais/delete/(:num)', 'FraisController::delete/$1');
 
+    $routes->get('/promotion', 'PromotionController::index');
+    $routes->post('/promotion/update', 'PromotionController::update');
+
     $routes->get('/SituationGain', 'SituationGainController::index');
     $routes->post('/SituationGain/delete/(:num)', 'SituationGainController::deleteTransaction/$1');
     $routes->get('/SituationMontantOperateur', 'SituationMontantOperateurController::index');

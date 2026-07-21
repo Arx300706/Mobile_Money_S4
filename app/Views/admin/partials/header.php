@@ -13,6 +13,7 @@
             <!-- <a href="/test">Test DB</a> -->
             <a href="/operateur">Operateurs</a>
             <a href="/TypeOperation">Types operations</a>
+            <a href="/promotion">Promotion</a>
             <a href="/SituationGain">Situation gains</a>
             <a href="/SituationMontantOperateur">Montants operateurs</a>
             <a href="/SituationClient">Situation clients</a>
