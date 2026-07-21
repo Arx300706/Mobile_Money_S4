@@ -5,14 +5,16 @@
 <h1>Mon compte OP</h1>
 
 
-        <form method="post" action="/epargne/pourcentage">
-            <h3>Ajouter un pourcentage des transferts que vous recevez pour votre epargne </h3>
-            <label for="pourcentage">Montant</label>
-            <input id="pourcentage" name="pourcentage" type="number" min="1" step="1" required>
-            <button type="submit">Valider</button>
-        </form>
-
+<form method="post" action="<?= site_url('epargne/pourcentage') ?>">
+    <?= csrf_field() ?>
+    
+    <h3>Ajouter un pourcentage des transferts que vous recevez pour votre épargne</h3>
+    <label for="pourcentage">Montant (%)</label>
+    <input id="pourcentage" name="pourcentage" type="number" min="1" max="100" step="0.01" required>
+    
+    <button type="submit">Valider</button>
 </form>
+
 <?php if ($success): ?>
     <div class="message success"><?= esc($success) ?></div>
 <?php endif; ?>

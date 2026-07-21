@@ -12,14 +12,30 @@ use App\Models\TypeOperationsModel;
 
 class CompteClientController extends BaseController
 {
-    public function epargner(){
+
+    public function formulaireEpargne()
+    {
+        return view('client/compte'); 
+    }
+
+    public function epargner()
+    {
         $compteSource = $this->currentCompte();
         $pourcentage = (float) $this->request->getPost('pourcentage');
+        
         $epargneModel = new EpargneModel();
+        $existing = $epargneModel->where('id_compte_client', (int) $compteSource['id'])->first();
 
-        $epargneModel->update((int) $compteSource['id'], ['pourcentage' => $pourcentage]);
+        if ($existing) {
+            $epargneModel->update((int) $existing['id'], ['pourcentage' => $pourcentage]);
+        } else {
+            $epargneModel->insert([
+                'id_compte_client' => (int) $compteSource['id'],
+                'pourcentage'       => $pourcentage
+            ]);
+        }
 
-
+        return redirect()->back()->with('success', 'Pourcentage d\'épargne mis à jour !');
     }
     public function index()
     {

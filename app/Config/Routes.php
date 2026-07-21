@@ -45,10 +45,20 @@ $routes->group('', ['filter' => 'admin'], static function ($routes) {
     $routes->get('/SituationClient', 'SituationClientController::index');
 });
 
+// $routes->group('', ['filter' => 'client'], static function ($routes) {
+//     $routes->get('/compte', 'CompteClientController::index');
+//     $routes->post('/compte/depot', 'CompteClientController::depot');
+//     $routes->post('/compte/retrait', 'CompteClientController::retrait');
+//     $routes->post('/compte/transfert', 'CompteClientController::transfert');
+//     $routes->get('/epargne/pourcentage', 'CompteClientController::epargner');
+// });
 $routes->group('', ['filter' => 'client'], static function ($routes) {
     $routes->get('/compte', 'CompteClientController::index');
     $routes->post('/compte/depot', 'CompteClientController::depot');
     $routes->post('/compte/retrait', 'CompteClientController::retrait');
     $routes->post('/compte/transfert', 'CompteClientController::transfert');
-    $routes->get('/epargne/pourcentage', 'CompteClientController::epargner');
+    
+    $routes->get('/epargne/pourcentage', 'CompteClientController::formulaireEpargne');
+
+    $routes->post('/epargne/pourcentage', 'CompteClientController::epargner');
 });
