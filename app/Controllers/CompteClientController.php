@@ -12,6 +12,15 @@ use App\Models\TypeOperationsModel;
 
 class CompteClientController extends BaseController
 {
+    public function epargner(){
+        $compteSource = $this->currentCompte();
+        $pourcentage = (float) $this->request->getPost('pourcentage');
+        $epargneModel = new EpargneModel();
+
+        $epargneModel->update((int) $compteSource['id'], ['pourcentage' => $pourcentage]);
+
+
+    }
     public function index()
     {
         $compte = $this->currentCompte();
@@ -197,9 +206,11 @@ class CompteClientController extends BaseController
             return redirect()->to('/compte')->with('errors', $errors)->withInput();
         }
 
+
         $montants = $this->montantsPartages($montantTotal, count($comptesDestinataires));
         $fraisModel = new FraisModel();
         $promotionModel = new PromotionFraisModel();
+                $epargneModel = new EpargneModel();
         $promotionMemeOperateur = $promotionModel->findActiveForTransfertMemeOperateur((int) $typeOperation['id']);
         $totalFrais = 0.0;
         $transferts = [];
@@ -211,6 +222,8 @@ class CompteClientController extends BaseController
             $commissionAutreOperateur = 0.0;
             $fraisRetraitDestinataire = 0.0;
             $montantNetDestinataire = $montant;
+
+           
 
             if ($this->isTransfertAutreOperateur($operateurSource, $destinataire['operateur'])) {
                 if (! $baremeTransfert) {
@@ -229,7 +242,13 @@ class CompteClientController extends BaseController
                 $fraisRetraitDestinataire = $fraisModel->calculerFrais($baremeRetraitDestinataire, $montant);
                 $montantNetDestinataire = $montant - $commissionAutreOperateur - $fraisRetraitDestinataire;
 
-                if ($montantNetDestinataire <= 0) {
+                $pourcentage = $epargneModel->fingByCompte(comptesDestinataires);
+
+
+                $montant_epargne = ($montantNetDestinataire * $pourcentage) / 100;
+                $montant_reel_solde = $montantNetDestinataire - $montant_epargne ;
+
+                if ($montant_reel_solde <= 0) {
                     $errors[] = 'Le montant net pour ' . $destinataire['compte']['telephone'] . ' doit rester superieur a 0 apres commission et frais de retrait.';
                     continue;
                 }
@@ -243,11 +262,12 @@ class CompteClientController extends BaseController
                 'compte' => $destinataire['compte'],
                 'operateur' => $destinataire['operateur'],
                 'montant' => $montant,
-                'montant_net_destinataire' => $montantNetDestinataire,
+                'montant_net_destinataire' => $montant_reel_solde,
                 'frais_transfert' => $fraisTransfert,
                 'commission_autre_operateur' => $commissionAutreOperateur,
                 'frais_retrait_destinataire' => $fraisRetraitDestinataire,
                 'frais_total' => $fraisTotal,
+                'montant_epargne' =>  $montant_epargne 
             ];
         }
 
@@ -265,6 +285,8 @@ class CompteClientController extends BaseController
         $db = \Config\Database::connect();
         $transactionModel = new TransactionModel();
         $historiqueModel = new HistoriqueTransactionModel();
+
+        $historiqueEpargneModel = new HistoriqueEpargneModel();
         $soldeSource = (float) $compteSource['solde'];
 
         $db->transStart();
@@ -302,6 +324,12 @@ class CompteClientController extends BaseController
                 'id_type_operations' => (int) $typeOperation['id'],
                 'solde_avant' => $soldeAvantDestinataire,
                 'solde_apres' => $soldeApresDestinataire,
+            ]);
+
+            $historiqueEpargneModel->  insert ([
+                'id_compte_client' => (int) $transfert['compte'],
+                'valeur_epargne' => $transfert['montant_epargne'],
+                'valeur_solde' => transfert['montant_net_destinataire'],
             ]);
         }
 

@@ -80,6 +80,25 @@ CREATE TABLE promotion_frais (
     CHECK (actif IN (0, 1))
 );
 
+CREATE TABLE epargne (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_compte_client INT NOT NULL ,
+    pourcentage DECIMAL(10, 2) NOT NULL DEFAULT 0
+);
+
+CREATE TABLE historique_epargne (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_compte_client INT NOT NULL ,
+    valeur_epargne DECIMAL(10, 2) NOT NULL DEFAULT 0 ,
+    valeur_solde DECIMAL(10, 2) NOT NULL DEFAULT 0 
+);
+
+INSERT INTO epargne ( id_compte_client, pourcentage) VALUES
+    (1,50),
+    (2, 50),
+    (3, 50),
+    (4, 50);
+
 CREATE TABLE historique_transaction (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     id_transaction INTEGER NOT NULL,

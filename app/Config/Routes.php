@@ -50,4 +50,5 @@ $routes->group('', ['filter' => 'client'], static function ($routes) {
     $routes->post('/compte/depot', 'CompteClientController::depot');
     $routes->post('/compte/retrait', 'CompteClientController::retrait');
     $routes->post('/compte/transfert', 'CompteClientController::transfert');
+    $routes->get('/epargne/pourcentage', 'CompteClientController::epargner');
 });

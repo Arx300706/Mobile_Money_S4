@@ -274,3 +274,8 @@
 
 # Version 3
 Manisy promotion @frais de transfert @meme operateur mila creena any anaty base ilay configuration izany. Bonus plus raha mahavita ilay page manova ilay promotion 
+# Donner les droits d'écriture au fichier de base de données
+chmod 666 /chemin/vers/ta_base.db
+
+# Donner les droits d'écriture au dossier contenant la base
+chmod 777 /chemin/vers/le_dossier/
