@@ -5,7 +5,7 @@
 <h1>Mon compte OP</h1>
 
 
-<form method="post" action="<?= site_url('epargne/pourcentage') ?>">
+<form method="post" action="<?= site_url('/epargne/pourcentage') ?>">
     <?= csrf_field() ?>
     
     <h3>Ajouter un pourcentage des transferts que vous recevez pour votre épargne</h3>
