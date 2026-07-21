@@ -32,7 +32,32 @@ class SituationGainController extends BaseController
             'totalMontant' => array_sum(array_map(static fn (array $row): float => (float) $row['montant_total'], $summary)),
             'totalOperations' => array_sum(array_map(static fn (array $row): int => (int) $row['nombre_operations'], $summary)),
             'totauxParOperateur' => $this->totauxParOperateur($summary),
+            'success' => session()->getFlashdata('success'),
+            'errors' => session()->getFlashdata('errors') ?? [],
         ]);
+    }
+
+    public function deleteTransaction(int $id)
+    {
+        $transactionModel = new TransactionModel();
+        $transaction = $transactionModel->find($id);
+
+        if (! $transaction) {
+            return redirect()->to('/SituationGain')->with('errors', ['Transaction introuvable.']);
+        }
+
+        $db = \Config\Database::connect();
+
+        $db->transStart();
+        $db->table('historique_transaction')->where('id_transaction', $id)->delete();
+        $transactionModel->delete($id);
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->to('/SituationGain')->with('errors', ['Erreur pendant la suppression.']);
+        }
+
+        return redirect()->to('/SituationGain')->with('success', 'Transaction effacee.');
     }
 
     private function totauxParOperateur(array $summary): array

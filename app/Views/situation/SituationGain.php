@@ -38,6 +38,18 @@
         </form>
     </div>
 
+    <?php if ($success): ?>
+        <div class="message success"><?= esc($success) ?></div>
+    <?php endif; ?>
+
+    <?php if ($errors !== []): ?>
+        <div class="message error">
+            <?php foreach ($errors as $error): ?>
+                <div><?= esc($error) ?></div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
     <div class="stats">
         <div class="stat">Gain total<strong><?= number_format((float) $totalGain, 0, ',', ' ') ?> Ar</strong></div>
         <div class="stat">Montant traite<strong><?= number_format((float) $totalMontant, 0, ',', ' ') ?> Ar</strong></div>
@@ -95,11 +107,12 @@
                 <th>Telephone</th>
                 <th>Montant</th>
                 <th>Frais gagne</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <?php if ($details === []): ?>
-                <tr><td colspan="7">Aucune operation.</td></tr>
+                <tr><td colspan="8">Aucune operation.</td></tr>
             <?php endif; ?>
             <?php foreach ($details as $transaction): ?>
                 <tr>
@@ -110,6 +123,11 @@
                     <td><?= esc($transaction['telephone']) ?></td>
                     <td><?= number_format((float) $transaction['montant'], 0, ',', ' ') ?> Ar</td>
                     <td><?= number_format((float) $transaction['montant_frais'], 0, ',', ' ') ?> Ar</td>
+                    <td>
+                        <form method="post" action="/SituationGain/delete/<?= esc($transaction['id']) ?>" class="inline-form">
+                            <button class="danger" type="submit">Effacer</button>
+                        </form>
+                    </td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

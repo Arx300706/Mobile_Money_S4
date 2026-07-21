@@ -168,7 +168,7 @@ class TransactionModel extends Model
     public function montantsAEnvoyerSummary(?string $dateDebut = null, ?string $dateFin = null): array
     {
         $builder = $this->db->table('"transaction" AS tr')
-            ->select('operateur_destinataire.nom AS operateur_destinataire, COUNT(tr.id) AS nombre_transferts, SUM(tr.montant) AS montant_total')
+            ->select('operateur_destinataire.nom AS operateur_destinataire, COUNT(tr.id) AS nombre_transferts, SUM(tr.montant) AS montant_total, SUM(tr.montant_frais) AS gain_total')
             ->join('type_operations', 'type_operations.id = tr.id_type_operations')
             ->join('compte_client AS compte_destinataire', 'compte_destinataire.id = tr.id_compte_destinataire')
             ->join('client AS client_destinataire', 'client_destinataire.id = compte_destinataire.id_client')

@@ -60,6 +60,7 @@
         <tr>
             <th>Date</th>
             <th>Operation</th>
+            <th>Numero transfert</th>
             <th>Montant</th>
             <th>Solde avant</th>
             <th>Solde apres</th>
@@ -67,12 +68,22 @@
         </thead>
         <tbody>
         <?php if ($historiques === []): ?>
-            <tr><td colspan="5">Aucun historique.</td></tr>
+            <tr><td colspan="6">Aucun historique.</td></tr>
         <?php endif; ?>
         <?php foreach ($historiques as $historique): ?>
+            <?php
+                $numeroTransfert = '';
+
+                if ($historique['id_compte_destinataire'] !== null) {
+                    $numeroTransfert = (float) $historique['solde_apres'] < (float) $historique['solde_avant']
+                        ? (string) ($historique['telephone_destinataire'] ?? '')
+                        : (string) ($historique['telephone_source'] ?? '');
+                }
+            ?>
             <tr>
                 <td><?= esc($historique['date']) ?></td>
                 <td><?= esc($historique['type_operation']) ?></td>
+                <td><?= esc($numeroTransfert) ?></td>
                 <td><?= number_format((float) $historique['montant'], 0, ',', ' ') ?> Ar</td>
                 <td><?= number_format((float) $historique['solde_avant'], 0, ',', ' ') ?> Ar</td>
                 <td><?= number_format((float) $historique['solde_apres'], 0, ',', ' ') ?> Ar</td>

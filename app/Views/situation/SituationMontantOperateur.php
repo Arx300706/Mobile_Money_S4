@@ -40,17 +40,19 @@
                 <th>Operateur destinataire</th>
                 <th>Nombre de transferts</th>
                 <th>Montant a envoyer</th>
+                <th>Gain</th>
             </tr>
             </thead>
             <tbody>
             <?php if ($summary === []): ?>
-                <tr><td colspan="3">Aucun transfert pour ce filtre.</td></tr>
+                <tr><td colspan="4">Aucun transfert pour ce filtre.</td></tr>
             <?php endif; ?>
             <?php foreach ($summary as $row): ?>
                 <tr>
                     <td><?= esc($row['operateur_destinataire']) ?></td>
                     <td><?= esc($row['nombre_transferts']) ?></td>
                     <td><?= number_format((float) $row['montant_total'], 0, ',', ' ') ?> Ar</td>
+                    <td><?= number_format((float) $row['gain_total'], 0, ',', ' ') ?> Ar</td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
